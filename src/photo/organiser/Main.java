@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 public class Main
 {
     private InputStream inputStream;
+    private HashFinder hashFinder;
 
     public static void main(String[] args)
     {
@@ -21,7 +22,7 @@ public class Main
         inputStream = in;
     }
 
-    void start(final Config config)
+    public void start(final Config config)
     {
         int menuItem;
         final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -35,9 +36,15 @@ public class Main
             return;
         }
 
+        hashFinder = new HashFinder(config.dir);
+
+        Thread searchingThread = new Thread(() -> hashFinder.start());
+        searchingThread.start();
+
         do
         {
             out("--------------------");
+            out("(1)  Status");
             out("(0)  Exit");
             out("--------------------");
             try
@@ -52,12 +59,20 @@ public class Main
             }
         }
         while(menuItem != 0);
+
+        searchingThread.interrupt();
         out("Finished");
     }
 
     private void onMenuItem(int menuItem)
     {
         out("Item choosen: " + menuItem);
+        switch (menuItem)
+        {
+            case 1:
+                out(hashFinder.getStatus());
+                break;
+        }
     }
 
     private void out(final Object message)

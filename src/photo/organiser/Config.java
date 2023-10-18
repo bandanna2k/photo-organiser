@@ -7,7 +7,7 @@ import java.nio.file.Path;
 
 public class Config
 {
-    private Path dir;
+    public Path dir;
 
     public Config(String[] args)
     {
