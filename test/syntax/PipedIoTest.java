@@ -1,4 +1,4 @@
-package java.syntax;
+package syntax;
 
 import org.junit.Test;
 

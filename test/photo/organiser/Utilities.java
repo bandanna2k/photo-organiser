@@ -2,13 +2,13 @@ package photo.organiser;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.FileTime;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.concurrent.TimeUnit;
 
 public abstract class Utilities
 {
@@ -31,5 +31,25 @@ public abstract class Utilities
                 FileTime.fromMillis(created.toInstant(ZONE_OFFSET).toEpochMilli())
         );
         return file;
+    }
+
+    public static void setFileTimes(File file, LocalDateTime creationTime, LocalDateTime modifiedTime, LocalDateTime accessedTime)
+    {
+        try
+        {
+            Files.setAttribute(file.toPath(), "creationTime", toFileTime(creationTime));
+            Files.setAttribute(file.toPath(), "lastModifiedTime", toFileTime(modifiedTime));
+            Files.setAttribute(file.toPath(), "lastAccessTime", toFileTime(accessedTime));
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static FileTime toFileTime(LocalDateTime timeInThePast)
+    {
+        Instant instant = timeInThePast.toInstant(ZONE_OFFSET);
+        return FileTime.fromMillis(instant.toEpochMilli());
     }
 }
