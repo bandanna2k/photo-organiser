@@ -9,9 +9,8 @@ import java.util.concurrent.TimeUnit;
 
 public class FileCounterTest extends TestBase
 {
-
     @Test
-    public void shouldCountFiles() throws IOException
+    public void shouldGetStatus() throws IOException
     {
         File newFile = new File(photosDir.toFile(), "new");
         Files.writeString(newFile.toPath(), "unique");

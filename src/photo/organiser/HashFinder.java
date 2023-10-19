@@ -23,7 +23,7 @@ public class HashFinder
     private final Path dir;
     private Status status = Status.Waiting;
 
-    private final Set<File> files = new TreeSet<File>();
+    private final Set<File> files = new TreeSet<>();
 
     private int countOfHashesCollected = 0;
     private final Map<String, List<File>> hashToFiles = new HashMap<>();
@@ -49,34 +49,39 @@ public class HashFinder
             Files.walkFileTree(dir, new FilenameCollector(files));
 
             status = Status.HashCollecting;
-            try
-            {
-                for (File file : files)
-                {
-                    byte[] bytes = Files.readAllBytes(file.toPath());
-                    byte[] hash = md5.digest(bytes);
-                    String base64 = Base64.getMimeEncoder().encodeToString(hash);
-
-                    List<File> files = hashToFiles.get(base64);
-                    if (null == files)
-                    {
-                        files = new ArrayList<>();
-                        files.add(file);
-                        hashToFiles.put(base64, files);
-                    }
-                    else
-                    {
-                        files.add(file);
-                    }
-                    countOfHashesCollected++;
-                }
-            }
-            catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
+            collectHashes();
 
             status = Status.Complete;
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void collectHashes()
+    {
+        try
+        {
+            for (File file : files)
+            {
+                byte[] bytes = Files.readAllBytes(file.toPath());
+                byte[] hash = md5.digest(bytes);
+                String base64 = Base64.getMimeEncoder().encodeToString(hash);
+
+                List<File> files = hashToFiles.get(base64);
+                if (null == files)
+                {
+                    files = new ArrayList<>();
+                    files.add(file);
+                    hashToFiles.put(base64, files);
+                }
+                else
+                {
+                    files.add(file);
+                }
+                countOfHashesCollected++;
+            }
         }
         catch (IOException e)
         {
