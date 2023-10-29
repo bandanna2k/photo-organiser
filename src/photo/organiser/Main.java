@@ -45,6 +45,7 @@ public class Main
         {
             out("--------------------");
             out("(1)  Status");
+            out("(2)  Next action");
             out("(0)  Exit");
             out("--------------------");
             try
@@ -71,6 +72,9 @@ public class Main
         {
             case 1:
                 out(hashFinder.getStatus());
+                break;
+            case 2:
+                out("Next action.");
                 break;
         }
     }

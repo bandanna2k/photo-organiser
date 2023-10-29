@@ -1,6 +1,5 @@
 package photo.organiser;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -11,7 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static photo.organiser.HashFinder.Status.Complete;
 import static photo.organiser.HashFinder.Status.Waiting;
 
@@ -37,21 +36,21 @@ public class HashFinderTest
     @Test
     public void testStatus()
     {
-        Assertions.assertThat(hashFinder.getStatus().status).isEqualTo(Waiting);
+        assertThat(hashFinder.getStatus().status).isEqualTo(Waiting);
         hashFinder.start();
-        Assertions.assertThat(hashFinder.getStatus().status).isEqualTo(Complete);
+        assertThat(hashFinder.getStatus().status).isEqualTo(Complete);
     }
 
     @Test
     public void testCounts()
     {
-        Assertions.assertThat(hashFinder.getStatus().countOfFiles).isEqualTo(0);
-        Assertions.assertThat(hashFinder.getStatus().countOfHashesCollected).isEqualTo(0);
-        Assertions.assertThat(hashFinder.getStatus().countOfUniqueHashes).isEqualTo(0);
+        assertThat(hashFinder.getStatus().countOfFiles).isEqualTo(0);
+        assertThat(hashFinder.getStatus().countOfHashesCollected).isEqualTo(0);
+        assertThat(hashFinder.getStatus().countOfUniqueHashes).isEqualTo(0);
         hashFinder.start();
-        Assertions.assertThat(hashFinder.getStatus().countOfFiles).isEqualTo(3);
-        Assertions.assertThat(hashFinder.getStatus().countOfHashesCollected).isEqualTo(3);
-        Assertions.assertThat(hashFinder.getStatus().countOfUniqueHashes).isEqualTo(2);
+        assertThat(hashFinder.getStatus().countOfFiles).isEqualTo(3);
+        assertThat(hashFinder.getStatus().countOfHashesCollected).isEqualTo(3);
+        assertThat(hashFinder.getStatus().countOfUniqueHashes).isEqualTo(2);
     }
 
     private Path getTemporaryDir()
