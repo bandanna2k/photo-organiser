@@ -11,9 +11,9 @@ public class PhotoFrame extends JFrame
     private final File imageLeft;
     private final File imageRight;
 
-    public PhotoFrame(final File imageLeft, final File imageRight) throws HeadlessException
+    public PhotoFrame(final File imageLeft, final File imageRight, String title) throws HeadlessException
     {
-        super("Photo Frame");
+        super("Photo Frame - " + title);
         this.imageLeft = imageLeft;
         this.imageRight = imageRight;
         init();
@@ -21,7 +21,7 @@ public class PhotoFrame extends JFrame
 
     public static void main(String[] args)
     {
-        new PhotoFrame(new File("/tmp/images/1.jpg"), new File("/tmp/images/2.jpg"));
+        new PhotoFrame(new File("/tmp/images/1.jpg"), new File("/tmp/images/2.jpg"), null);
     }
 
     private void init()

@@ -5,7 +5,8 @@ import photo.organiser.ui.PhotoFrame;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main
 {
@@ -14,47 +15,77 @@ public class Main
         new Main().start();
     }
 
-    private void start() throws IOException, InterruptedException
+    private void start() throws InterruptedException
     {
-
-        Thread thread1 = new Thread(() ->
+        List<Thread> threads = new ArrayList<>();
         {
-            try
+            Thread thread = new Thread(() ->
             {
-                File tempFile = createTempFile();
-                File srcImage = new File("/tmp/images/1.jpg");
-                new ImageIoOptimisation(srcImage, tempFile, 0.3f).optimise();
+                try
+                {
+                    File tempFile = createTempFile();
+                    File srcImage = new File("/tmp/images/1.jpg");
+                    ImageOptimisation optimisation = new ImageIoOptimisation(srcImage, tempFile, 0.3f);
+                    optimisation.optimise();
 
-                new PhotoFrame(srcImage, tempFile);
-                System.out.println("Finished 1");
-            }
-            catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
-        });
-        thread1.start();
-
-        Thread thread2 = new Thread(() ->
+                    new PhotoFrame(srcImage, tempFile, optimisation.getClass().getSimpleName());
+                    System.out.println("Finished 1");
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            });
+            thread.start();
+            threads.add(thread);
+        }
         {
-            try
+            Thread thread = new Thread(() ->
             {
-                File tempFile = createTempFile();
-                File srcImage = new File("/tmp/images/1.jpg");
-                new ThumbnailatorOptimisation(srcImage, tempFile, 0.3f).optimise();
+                try
+                {
+                    File tempFile = createTempFile();
+                    File srcImage = new File("/tmp/images/1.jpg");
+                    ImageOptimisation optimisation = new ThumbnailatorOptimisation(srcImage, tempFile, 0.3f);
+                    optimisation.optimise();
 
-                new PhotoFrame(srcImage, tempFile);
-                System.out.println("Finished 2");
-            }
-            catch (IOException e)
+                    new PhotoFrame(srcImage, tempFile, optimisation.getClass().getSimpleName());
+                    System.out.println("Finished 1");
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            });
+            thread.start();
+            threads.add(thread);
+        }
+        {
+            Thread thread = new Thread(() ->
             {
-                throw new RuntimeException(e);
-            }
-        });
-        thread2.start();
+                try
+                {
+                    File tempFile = createTempFile();
+                    File srcImage = new File("/tmp/images/1.jpg");
+                    ImageOptimisation optimisation = new JPEGOptimizerOptimisation(srcImage, tempFile, 0.3f);
+                    optimisation.optimise();
 
-        thread1.join();
-        thread2.join();
+                    new PhotoFrame(srcImage, tempFile, optimisation.getClass().getSimpleName());
+                    System.out.println("Finished 1");
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            });
+            thread.start();
+            threads.add(thread);
+        }
+
+        for (Thread t : threads)
+        {
+            t.join();
+        }
     }
 
     private static File createTempFile() throws IOException

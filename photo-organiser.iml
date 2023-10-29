@@ -11,5 +11,14 @@
     <orderEntry type="library" name="junit" level="project" />
     <orderEntry type="library" name="assertj.core" level="project" />
     <orderEntry type="library" name="net.coobird.thumbnailator" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/jars/JPEGOptimizer.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
