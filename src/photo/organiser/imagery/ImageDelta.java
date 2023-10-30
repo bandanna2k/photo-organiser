@@ -36,14 +36,20 @@ public class ImageDelta
         // compare img1 to img2, pixel by pixel. If different, highlight img1's pixel...
         for (int i = 0; i < length; i++)
         {
-            delta[i] = abs(p1[i] - p2[i]);
+            Color color1 = new Color(p1[i]);
+            Color color2 = new Color(p2[i]);
+            delta[i] += abs(color1.getRed() - color2.getRed());
+            delta[i] += abs(color1.getGreen() - color2.getGreen());
+            delta[i] += abs(color1.getBlue() - color2.getBlue());
             maxDelta = max(delta[i], maxDelta);
         }
 
         double multiplier = 255.0 / maxDelta;
         for (int i = 0; i < length; i++)
         {
-            p1[i] = (int)(delta[i] * multiplier);
+            int n = ((int)(delta[i] * multiplier));
+            Color color = new Color(n, n, n);
+            p1[i] = color.getRGB();
         }
 
         // save img1's pixels to a new BufferedImage, and return it...
