@@ -17,14 +17,16 @@ public class PhotoFrame extends JFrame
     public PhotoFrame(String title, File... imageFiles) throws HeadlessException
     {
         super("Photo Frame - " + title);
-        Arrays.stream(imageFiles).forEach(file -> {
+        Arrays.stream(imageFiles).forEach(file ->
+        {
             try
             {
                 images.put(file, ImageIO.read(file));
             }
             catch (IOException e)
             {
-                System.out.println(file.getName() + " " + e.getMessage());;
+                System.out.println(file.getName() + " " + e.getMessage());
+                ;
             }
         });
         initComponents();
@@ -51,17 +53,25 @@ public class PhotoFrame extends JFrame
     private JPanel createMainPanel()
     {
         JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout(5,5));
+        mainPanel.setLayout(new BorderLayout(5, 5));
 
         JButton button = new JButton("OK");
-        button.addActionListener(actionEvent -> {
+        button.addActionListener(actionEvent ->
+        {
             this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         });
 
         JPanel centrePanel = new JPanel();
         centrePanel.setLayout(new GridLayout(1, images.size(), 5, 5));
-        images.entrySet().forEach(image -> addImageComponent(centrePanel, image));
-
+        images.entrySet().forEach(imageEntry -> addImageComponent(centrePanel, imageEntry));
+        Arrays.stream(centrePanel.getComponents()).forEach(component1 ->
+        {
+            ImageComponent imageComponent1 = ((ImageComponent) component1);
+            Arrays.stream(centrePanel.getComponents()).forEach(component2 ->
+            {
+                ((ImageComponent) component2).addListener(imageComponent1);
+            });
+        });
         mainPanel.add(centrePanel, BorderLayout.CENTER);
         mainPanel.add(button, BorderLayout.PAGE_END);
         return mainPanel;
@@ -70,7 +80,7 @@ public class PhotoFrame extends JFrame
     private static void addImageComponent(Container container, Map.Entry<File, BufferedImage> imageEntry)
     {
         BufferedImage image = imageEntry.getValue();
-        if(null == image)
+        if (null == image)
         {
             JLabel label = new JLabel(imageEntry.getKey().getName() + " Failed to load image.");
             container.add(label);
