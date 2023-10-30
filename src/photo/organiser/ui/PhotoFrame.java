@@ -34,7 +34,7 @@ public class PhotoFrame extends JFrame
 
     public static void main(String[] args)
     {
-        PhotoFrame photoFrame = new PhotoFrame("Test", new File("/tmp/images/1.jpg"), new File("/tmp/images/2.jpg"));
+        PhotoFrame photoFrame = new PhotoFrame("Test", new File("/tmp/images/1.jpg"), new File("/tmp/images/3.jpg"));
     }
 
     private void initComponents()

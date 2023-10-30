@@ -28,7 +28,7 @@ public class Main
                 {
                     File tempFile = createTempFile();
                     File srcImage = new File("/tmp/images/1.jpg");
-                    ImageOptimisation optimisation = new ImageIoOptimisation(srcImage, tempFile, 0.3f);
+                    ImageOptimisation optimisation = new ImageIoOptimisation(srcImage, tempFile, 0.05f);
                     optimisation.optimise();
 
                     ImageDelta imageDelta = new ImageDelta(ImageIO.read(srcImage), ImageIO.read(tempFile));
