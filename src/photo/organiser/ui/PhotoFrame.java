@@ -1,34 +1,46 @@
 package photo.organiser.ui;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.*;
 
 public class PhotoFrame extends JFrame
 {
-    private final File imageLeft;
-    private final File imageRight;
+    private final Map<File, BufferedImage> images = new TreeMap<>(Comparator.reverseOrder());
+    private JPanel mainPanel;
 
-    public PhotoFrame(final File imageLeft, final File imageRight, String title) throws HeadlessException
+    public PhotoFrame(String title, File... imageFiles) throws HeadlessException
     {
         super("Photo Frame - " + title);
-        this.imageLeft = imageLeft;
-        this.imageRight = imageRight;
-        init();
+        Arrays.stream(imageFiles).forEach(file -> {
+            try
+            {
+                images.put(file, ImageIO.read(file));
+            }
+            catch (IOException e)
+            {
+                System.out.println(file.getName() + " " + e.getMessage());;
+            }
+        });
+        initComponents();
     }
 
     public static void main(String[] args)
     {
-        new PhotoFrame(new File("/tmp/images/1.jpg"), new File("/tmp/images/2.jpg"), null);
+        PhotoFrame photoFrame = new PhotoFrame("Test", new File("/tmp/images/1.jpg"), new File("/tmp/images/2.jpg"));
     }
 
-    private void init()
+    private void initComponents()
     {
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        add(createMainPanel());
+        mainPanel = createMainPanel();
+        add(mainPanel);
         setVisible(true);
 
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
@@ -47,26 +59,37 @@ public class PhotoFrame extends JFrame
         });
 
         JPanel centrePanel = new JPanel();
-        centrePanel.setLayout(new GridLayout(1, 2, 5, 5));
-        addImageComponent(centrePanel, BorderLayout.WEST, imageLeft);
-        addImageComponent(centrePanel, BorderLayout.EAST, imageRight);
+        centrePanel.setLayout(new GridLayout(1, images.size(), 5, 5));
+        images.entrySet().forEach(image -> addImageComponent(centrePanel, image));
 
         mainPanel.add(centrePanel, BorderLayout.CENTER);
         mainPanel.add(button, BorderLayout.PAGE_END);
         return mainPanel;
     }
 
-    private static void addImageComponent(Container container, String orientation, File image)
+    private static void addImageComponent(Container container, Map.Entry<File, BufferedImage> imageEntry)
     {
-        try
+        BufferedImage image = imageEntry.getValue();
+        if(null == image)
         {
-            container.add(new ImageComponent(image), orientation);
+            JLabel label = new JLabel(imageEntry.getKey().getName() + " Failed to load image.");
+            container.add(label);
         }
-        catch (IOException e)
+        else
         {
-            JLabel label = new JLabel(e.getMessage());
-            label.setHorizontalAlignment(SwingConstants.CENTER);
-            container.add(label, orientation);
+            container.add(new ImageComponent(image, imageEntry.getKey().length()));
         }
+    }
+
+    public void addImage(final BufferedImage image)
+    {
+        images.put(new File(""), image);
+
+        getContentPane().remove(mainPanel);
+
+        mainPanel = createMainPanel();
+        getContentPane().add(mainPanel, BorderLayout.CENTER);
+
+        revalidate();
     }
 }

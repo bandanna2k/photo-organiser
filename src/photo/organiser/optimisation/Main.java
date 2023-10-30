@@ -1,7 +1,10 @@
 package photo.organiser.optimisation;
 
+import photo.organiser.imagery.ImageDelta;
 import photo.organiser.ui.PhotoFrame;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,8 +31,15 @@ public class Main
                     ImageOptimisation optimisation = new ImageIoOptimisation(srcImage, tempFile, 0.3f);
                     optimisation.optimise();
 
-                    new PhotoFrame(srcImage, tempFile, optimisation.getClass().getSimpleName());
-                    System.out.println("Finished 1");
+                    ImageDelta imageDelta = new ImageDelta(ImageIO.read(srcImage), ImageIO.read(tempFile));
+
+                    PhotoFrame photoFrame = new PhotoFrame(optimisation.getClass().getSimpleName(), srcImage, tempFile);
+                    System.out.println("Displaying");
+                    System.out.println("Creating delta");
+                    BufferedImage delta = imageDelta.delta();
+                    System.out.println("Finished delta");
+                    photoFrame.addImage(delta);
+                    System.out.println("Redisplaying");
                 }
                 catch (IOException e)
                 {
@@ -39,6 +49,7 @@ public class Main
             thread.start();
             threads.add(thread);
         }
+        if(false)
         {
             Thread thread = new Thread(() ->
             {
@@ -49,8 +60,8 @@ public class Main
                     ImageOptimisation optimisation = new ThumbnailatorOptimisation(srcImage, tempFile, 0.3f);
                     optimisation.optimise();
 
-                    new PhotoFrame(srcImage, tempFile, optimisation.getClass().getSimpleName());
-                    System.out.println("Finished 1");
+                    new PhotoFrame(optimisation.getClass().getSimpleName(), srcImage, tempFile);
+                    System.out.println("Displaying");
                 }
                 catch (IOException e)
                 {
@@ -60,6 +71,7 @@ public class Main
             thread.start();
             threads.add(thread);
         }
+        if(false)
         {
             Thread thread = new Thread(() ->
             {
@@ -70,7 +82,7 @@ public class Main
                     ImageOptimisation optimisation = new JPEGOptimizerOptimisation(srcImage, tempFile, 0.3f);
                     optimisation.optimise();
 
-                    new PhotoFrame(srcImage, tempFile, optimisation.getClass().getSimpleName());
+                    new PhotoFrame(optimisation.getClass().getSimpleName(), srcImage, tempFile);
                     System.out.println("Finished 1");
                 }
                 catch (IOException e)
