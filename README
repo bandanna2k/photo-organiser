@@ -5,10 +5,19 @@
 
 
 
-Photos
+FOLDER STRUCTURE
+- Photos (Final folder)
+- Duplicates (Where duplicates go)
+- Awaiting (Where images to be sorted go)
 
 
-Duplicates
-
-
-Awaiting
+WORKFLOW
+- Collect common hashes
+- Check if image needs optimising
+  - Decide on optimisation level
+- Decide on image to keep (other to move to duplicates)
+  - Selection, re-input into image selector
+- Operations
+  - Show
+  - Test
+  - Apply
