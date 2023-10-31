@@ -1,4 +1,4 @@
-package photo.organiser.imagery;
+package photo.organiser.ui;
 
 import javax.swing.*;
 import java.awt.*;

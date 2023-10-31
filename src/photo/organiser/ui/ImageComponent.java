@@ -1,7 +1,6 @@
 package photo.organiser.ui;
 
 import photo.organiser.common.HumanReadableBytes;
-import photo.organiser.imagery.PanningPanel;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

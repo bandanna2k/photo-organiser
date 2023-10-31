@@ -44,25 +44,31 @@ public class ImageDelta
             maxDelta = max(delta[i], maxDelta);
         }
 
-        double multiplier = 255.0 / maxDelta;
+        final double multiplier = 255.0 / maxDelta;
+        double scorePerPixel = 0;
         for (int i = 0; i < length; i++)
         {
+            scorePerPixel += delta[i];
             int n = ((int)(delta[i] * multiplier));
             Color color = new Color(n, n, n);
             p1[i] = color.getRGB();
         }
+        double pixelCount = ((double) w) * ((double) h);
+        scorePerPixel = scorePerPixel / pixelCount;
 
         // save img1's pixels to a new BufferedImage, and return it...
         // (May require TYPE_INT_ARGB)
         final BufferedImage result = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         result.setRGB(0, 0, w, h, p1, 0, w);
 
-        String text = String.format("0 to %.2f -> 0 to 255", maxDelta);
+        String colorMappingText = String.format("0 to %.2f -> 0 to 255", maxDelta);
+        String scoreText = String.format("Score: %.2f", scorePerPixel);
 
         Graphics2D g2d = result.createGraphics();
         g2d.setPaint(Color.WHITE);
         g2d.setFont(FONT);
-        g2d.drawString(text, 10, 40);
+        g2d.drawString(colorMappingText, 10, 40);
+        g2d.drawString(scoreText, 10, 60);
 
         return result;
     }

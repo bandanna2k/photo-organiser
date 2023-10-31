@@ -22,74 +22,17 @@ public class Main
     {
         List<Thread> threads = new ArrayList<>();
         {
-            Thread thread = new Thread(() ->
-            {
-                try
-                {
-                    File tempFile = createTempFile();
-                    File srcImage = new File("/tmp/images/1.jpg");
-                    ImageOptimisation optimisation = new ImageIoOptimisation(srcImage, tempFile, 0.05f);
-                    optimisation.optimise();
-
-                    ImageDelta imageDelta = new ImageDelta(ImageIO.read(srcImage), ImageIO.read(tempFile));
-
-                    PhotoFrame photoFrame = new PhotoFrame(optimisation.getClass().getSimpleName(), srcImage, tempFile);
-                    System.out.println("Displaying");
-                    System.out.println("Creating delta");
-                    BufferedImage delta = imageDelta.delta();
-                    System.out.println("Finished delta");
-                    photoFrame.addImage(delta);
-                    System.out.println("Redisplaying");
-                }
-                catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
-            });
+            Thread thread = new Thread(compareImages(0.05f));
             thread.start();
             threads.add(thread);
         }
-        if(false)
         {
-            Thread thread = new Thread(() ->
-            {
-                try
-                {
-                    File tempFile = createTempFile();
-                    File srcImage = new File("/tmp/images/1.jpg");
-                    ImageOptimisation optimisation = new ThumbnailatorOptimisation(srcImage, tempFile, 0.3f);
-                    optimisation.optimise();
-
-                    new PhotoFrame(optimisation.getClass().getSimpleName(), srcImage, tempFile);
-                    System.out.println("Displaying");
-                }
-                catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
-            });
+            Thread thread = new Thread(compareImages(0.80f));
             thread.start();
             threads.add(thread);
         }
-        if(false)
         {
-            Thread thread = new Thread(() ->
-            {
-                try
-                {
-                    File tempFile = createTempFile();
-                    File srcImage = new File("/tmp/images/1.jpg");
-                    ImageOptimisation optimisation = new JPEGOptimizerOptimisation(srcImage, tempFile, 0.3f);
-                    optimisation.optimise();
-
-                    new PhotoFrame(optimisation.getClass().getSimpleName(), srcImage, tempFile);
-                    System.out.println("Finished 1");
-                }
-                catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
-            });
+            Thread thread = new Thread(compareImages(0.60f));
             thread.start();
             threads.add(thread);
         }
@@ -98,6 +41,34 @@ public class Main
         {
             t.join();
         }
+    }
+
+    private static Runnable compareImages(float quality)
+    {
+        return () ->
+        {
+            try
+            {
+                File tempFile = createTempFile();
+                File srcImage = new File("/tmp/images/1.jpg");
+                ImageOptimisation optimisation = new ImageIoOptimisation(srcImage, tempFile, quality);
+                optimisation.optimise();
+
+                ImageDelta imageDelta = new ImageDelta(ImageIO.read(srcImage), ImageIO.read(tempFile));
+
+                PhotoFrame photoFrame = new PhotoFrame(optimisation.getClass().getSimpleName() + " " + quality, srcImage, tempFile);
+                System.out.println("Displaying");
+                System.out.println("Creating delta");
+                BufferedImage delta = imageDelta.delta();
+                System.out.println("Finished delta");
+                photoFrame.addImage(delta);
+                System.out.println("Redisplaying");
+            }
+            catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        };
     }
 
     private static File createTempFile() throws IOException
