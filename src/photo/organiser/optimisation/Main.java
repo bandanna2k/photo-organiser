@@ -21,18 +21,33 @@ public class Main
     private void start() throws InterruptedException
     {
         List<Thread> threads = new ArrayList<>();
+//        {
+//            Thread thread = new Thread(compareImages(0.05f));
+//            thread.start();
+//            threads.add(thread);
+//        }
+//        {
+//            Thread thread = new Thread(compareImages(0.80f));
+//            thread.start();
+//            threads.add(thread);
+//        }
         {
-            Thread thread = new Thread(compareImages(0.05f));
+            Thread thread = new Thread(compareImages("/home/northd/Downloads/DSC_0177.JPG", 0.8f));
             thread.start();
             threads.add(thread);
         }
         {
-            Thread thread = new Thread(compareImages(0.80f));
+            Thread thread = new Thread(compareImages("/home/northd/Downloads/DSC_0177.JPG", 0.55f));
             thread.start();
             threads.add(thread);
         }
         {
-            Thread thread = new Thread(compareImages(0.60f));
+            Thread thread = new Thread(deltaCompareFiles("/home/northd/Downloads/DSC_0177.JPG", "/home/northd/Downloads/DSC_0177-xat80-0.JPG"));
+            thread.start();
+            threads.add(thread);
+        }
+        {
+            Thread thread = new Thread(deltaCompareFiles("/home/northd/Downloads/DSC_0177.JPG", "/home/northd/Downloads/DSC_0177-xat80-50.JPG"));
             thread.start();
             threads.add(thread);
         }
@@ -43,14 +58,35 @@ public class Main
         }
     }
 
-    private static Runnable compareImages(float quality)
+    private static Runnable deltaCompareFiles(String filename1, String filename2)
+    {
+        return () ->
+        {
+            try
+            {
+                File image1 = new File(filename1);
+                File image2 = new File(filename2);
+
+                PhotoFrame photoFrame = new PhotoFrame("", image1, image2);
+
+                ImageDelta imageDelta = new ImageDelta(ImageIO.read(image1), ImageIO.read(image2));
+                photoFrame.addImage(imageDelta.delta());
+            }
+            catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    private static Runnable compareImages(String filename, float quality)
     {
         return () ->
         {
             try
             {
                 File tempFile = createTempFile();
-                File srcImage = new File("/tmp/images/1.jpg");
+                File srcImage = new File(filename);
                 ImageOptimisation optimisation = new ImageIoOptimisation(srcImage, tempFile, quality);
                 optimisation.optimise();
 
