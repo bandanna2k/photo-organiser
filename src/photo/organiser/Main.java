@@ -3,15 +3,18 @@ package photo.organiser;
 import photo.organiser.common.Result;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class Main
 {
-    private InputStream inputStream;
     private HashFinder hashFinder;
+    private Map<String, Record> hashToRecord = new HashMap<>();
+    private BufferedReader reader;
 
     public static void main(String[] args)
     {
@@ -21,13 +24,12 @@ public class Main
 
     public Main(InputStream in)
     {
-        inputStream = in;
+        reader = new BufferedReader(new InputStreamReader(in));
     }
 
     public void start(final Config config)
     {
         int menuItem;
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
         out(config);
 
@@ -38,17 +40,24 @@ public class Main
             return;
         }
 
-        Map<String, Record> hashToRecord = new HashMap<>();
         hashFinder = new HashFinder(config.dir, hashToRecord);
 
         Thread searchingThread = new Thread(() -> hashFinder.start());
         searchingThread.start();
+        try
+        {
+            searchingThread.join();
+        }
+        catch (InterruptedException e)
+        {
+            throw new RuntimeException(e);
+        }
 
         do
         {
             out("--------------------");
             out("(1)  Status");
-            out("(2)  Next action");
+            out("(2)  Process");
             out("(0)  Exit");
             out("--------------------");
             try
@@ -77,9 +86,30 @@ public class Main
                 out(hashFinder.getStatus());
                 break;
             case 2:
+                Optional<Map.Entry<String, Record>> any = hashToRecord.entrySet().stream().findAny();
+                any.ifPresentOrElse(entry -> process(entry), () -> out("No file to process."));
                 out("Next action.");
                 break;
         }
+    }
+
+    private void process(Map.Entry<String, Record> entry)
+    {
+        FileProcessor fileProcessor = new FileProcessor(
+                message ->
+                {
+                    try
+                    {
+                        out(message);
+                        return reader.readLine();
+                    }
+                    catch (IOException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+                },
+                entry.getValue());
+        fileProcessor.start();
     }
 
     private void out(final Object message)

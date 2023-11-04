@@ -32,6 +32,12 @@ public class ImageIoOptimisation implements ImageOptimisation
 
             Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
             ImageWriter writer = writers.next();
+            System.out.println("Writer: " + writer);
+
+            while(writers.hasNext())
+            {
+                System.out.println("Unused: " + writers.next());
+            }
 
             ImageOutputStream outputStream = ImageIO.createImageOutputStream(destImage);
             writer.setOutput(outputStream);

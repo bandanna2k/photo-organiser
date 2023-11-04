@@ -7,6 +7,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class MainTest
 {
@@ -16,6 +20,9 @@ public class MainTest
     private PrintWriter user;
     private Main main;
     private Thread appThread;
+    private File photos;
+    private File duplicates;
+    private File awaiting;
 
     @Before
     public void setUp() throws Exception
@@ -27,9 +34,14 @@ public class MainTest
         main = new Main(pis);
 
         File tempDir = temporaryFolder.newFolder();
-        new File(tempDir, "Photos").mkdir();
-        new File(tempDir, "Duplicates").mkdir();
-        new File(tempDir, "Awaiting").mkdir();
+        photos = new File(tempDir, "Photos");
+        photos.mkdir();
+        duplicates = new File(tempDir, "Duplicates");
+        duplicates.mkdir();
+        awaiting = new File(tempDir, "Awaiting");
+        awaiting.mkdir();
+
+        addImages();
 
         appThread = new Thread(() -> main.start(new Config(new String[]{tempDir.getAbsolutePath()})));
         appThread.start();
@@ -46,5 +58,32 @@ public class MainTest
     {
         user.println("99");
         user.println("0");
+    }
+
+    @Test
+    public void shouldProcess()
+    {
+        user.println("2");
+//        user.println("0");
+    }
+
+    private void addImages()
+    {
+        //addImage("/photo_medium.jpg", "1.jpg");
+        addImage("/photo_large.jpg", "2.jpg");
+    }
+
+    private void addImage(String name, String image)
+    {
+        try
+        {
+            URL resource = this.getClass().getResource(name);
+            assert resource != null : "Null resource";
+            Files.copy(Path.of(resource.toURI()), new File(awaiting, image).toPath());
+        }
+        catch (URISyntaxException | IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 }
