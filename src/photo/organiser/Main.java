@@ -34,7 +34,7 @@ public class Main
         out(config);
 
         Result<Void, String> validate = config.validate();
-        if(validate.isFailure())
+        if (validate.isFailure())
         {
             out("Error: " + validate.failure());
             return;
@@ -70,8 +70,7 @@ public class Main
             {
                 throw new RuntimeException(e);
             }
-        }
-        while(menuItem != 0);
+        } while (menuItem != 0);
 
         searchingThread.interrupt();
         out("Finished");
@@ -79,7 +78,7 @@ public class Main
 
     private void onMenuItem(int menuItem)
     {
-        out("Item choosen: " + menuItem);
+        out("Item chosen: " + menuItem);
         switch (menuItem)
         {
             case 1:
@@ -87,8 +86,7 @@ public class Main
                 break;
             case 2:
                 Optional<Map.Entry<String, Record>> any = hashToRecord.entrySet().stream().findAny();
-                any.ifPresentOrElse(entry -> process(entry), () -> out("No file to process."));
-                out("Next action.");
+                any.ifPresentOrElse(this::process, () -> out("No file to process."));
                 break;
         }
     }
@@ -96,16 +94,25 @@ public class Main
     private void process(Map.Entry<String, Record> entry)
     {
         FileProcessor fileProcessor = new FileProcessor(
-                message ->
+                new IO()
                 {
-                    try
+                    @Override
+                    public String ask(String message)
                     {
-                        out(message);
-                        return reader.readLine();
+                        try
+                        {
+                            out(message);
+                            return reader.readLine();
+                        }
+                        catch (IOException e)
+                        {
+                            throw new RuntimeException(e);
+                        }
                     }
-                    catch (IOException e)
+                    @Override
+                    public void out(Object object)
                     {
-                        throw new RuntimeException(e);
+                        Main.this.out(object);
                     }
                 },
                 entry.getValue());

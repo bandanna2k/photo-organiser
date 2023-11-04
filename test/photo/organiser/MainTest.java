@@ -61,10 +61,20 @@ public class MainTest
     }
 
     @Test
-    public void shouldProcess()
+    public void shouldChoseNoFileToProcess()
     {
         user.println("2");
-//        user.println("0");
+        user.println("0");
+        user.println("0");
+    }
+
+    @Test
+    public void shouldChoseFileToProcess()
+    {
+        user.println("2");  // Process
+        user.println("1");  // Choose hash
+        user.println("1");  // Choose destination
+        user.println("0");
     }
 
     private void addImages()
