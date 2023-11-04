@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static photo.organiser.HashFinder.Status.Complete;
@@ -30,7 +31,7 @@ public class HashFinderTest
         Files.writeString(new File(tempDir.toFile(), "file1").toPath(), "unique");
         Files.writeString(new File(tempDir.toFile(), "file2").toPath(), "same");
         Files.writeString(new File(tempDir.toFile(), "file3").toPath(), "same");
-        hashFinder = new HashFinder(tempDir);
+        hashFinder = new HashFinder(tempDir, new HashMap<>());
     }
 
     @Test

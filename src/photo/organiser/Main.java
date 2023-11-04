@@ -5,6 +5,8 @@ import photo.organiser.common.Result;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main
 {
@@ -36,7 +38,8 @@ public class Main
             return;
         }
 
-        hashFinder = new HashFinder(config.dir);
+        Map<String, Record> hashToRecord = new HashMap<>();
+        hashFinder = new HashFinder(config.dir, hashToRecord);
 
         Thread searchingThread = new Thread(() -> hashFinder.start());
         searchingThread.start();

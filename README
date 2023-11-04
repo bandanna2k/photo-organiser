@@ -13,7 +13,7 @@ FOLDER STRUCTURE
 
 WORKFLOW
 - Collect common hashes
-- Check if image needs optimising
+- Check if image needs optimising (is % saved better than 50%)
   - Decide on optimisation level
 - Decide on image to keep (other to move to duplicates)
   - Selection, re-input into image selector

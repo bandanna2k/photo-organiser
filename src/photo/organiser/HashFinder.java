@@ -26,10 +26,11 @@ public class HashFinder
     private final Set<File> files = new TreeSet<>();
 
     private int countOfHashesCollected = 0;
-    private final Map<String, List<File>> hashToFiles = new HashMap<>();
+    private final Map<String, Record> hashToFiles;
 
-    public HashFinder(Path dir)
+    public HashFinder(Path dir, Map<String, Record> hashToRecord)
     {
+        this.hashToFiles = hashToRecord;
         this.dir = dir;
         try
         {
@@ -69,12 +70,12 @@ public class HashFinder
                 byte[] hash = md5.digest(bytes);
                 String base64 = Base64.getMimeEncoder().encodeToString(hash);
 
-                List<File> files = hashToFiles.get(base64);
-                if (null == files)
+                Record record = hashToFiles.get(base64);
+                if (null == record)
                 {
-                    files = new ArrayList<>();
-                    files.add(file);
-                    hashToFiles.put(base64, files);
+                    record = new Record(new ArrayList<>());
+                    record.files.add(file);
+                    hashToFiles.put(base64, record);
                 }
                 else
                 {
