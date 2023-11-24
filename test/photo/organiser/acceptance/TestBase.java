@@ -32,7 +32,7 @@ public abstract class TestBase
         PipedInputStream pis = new PipedInputStream(pos);
         OutputStreamWriter osw = new OutputStreamWriter(pos);
         user = new PrintWriter(osw, true);
-        main = new Main(pis);
+        main = new Main(null, pis);
 
         File tempDir = this.tempDir.newFolder();
 
@@ -45,7 +45,7 @@ public abstract class TestBase
         awaiting = new File(tempDir, "Awaiting").toPath();
         awaiting.toFile().mkdir();
 
-        appThread = new Thread(() -> main.start(new Config(new String[]{tempDir.getAbsolutePath()})));
+        appThread = new Thread(() -> main.start());
         appThread.start();
     }
 

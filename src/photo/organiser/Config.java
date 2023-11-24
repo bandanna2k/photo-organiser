@@ -7,13 +7,17 @@ import java.nio.file.Path;
 
 public class Config
 {
-    public Path dir;
+    private final Path targetDirectory;
+    public final Path triageDirectory;
+    public final Path archiveDirectory;
 
     public Config(String[] args)
     {
         try
         {
-            dir = Path.of(args[0]);
+            triageDirectory = Path.of(args[0]);
+            targetDirectory = Path.of(args[1]);
+            archiveDirectory = Path.of(args[2]);
         }
         catch (Exception ex)
         {
@@ -23,28 +27,28 @@ public class Config
 
     public Result<Void, String> validate()
     {
-        Result<Void, String> photoResult = validateChildDirectory("Photos");
-        if(photoResult.isSuccess()) return photoResult;
+        Result<Void, String> photoResult = validateDirectory(targetDirectory);
+        if(photoResult.isFailure()) return photoResult;
 
-        Result<Void, String> duplicates = validateChildDirectory("Duplicates");
-        if(duplicates.isSuccess()) return duplicates;
+        Result<Void, String> archiveResult = validateDirectory(archiveDirectory);
+        if(archiveResult.isFailure()) return archiveResult;
 
-        Result<Void, String> awaitingResult = validateChildDirectory("Awaiting");
-        if(awaitingResult.isSuccess()) return awaitingResult;
+        Result<Void, String> awaitingResult = validateDirectory(triageDirectory);
+        if(awaitingResult.isFailure()) return awaitingResult;
 
         return Result.success();
     }
 
-    private Result<Void, String> validateChildDirectory(String child)
+    private Result<Void, String> validateDirectory(Path directory)
     {
-        File childDir = new File(dir.toFile(), child);
+        File childDir = directory.toFile();
         if(!childDir.exists())
         {
-            return Result.failure("Directory does not exist. " + childDir);
+            return Result.failure("Directory does not exist. " + childDir.getAbsolutePath());
         }
         if(!childDir.isDirectory())
         {
-            return Result.failure("Given directory is not a directory. " + childDir);
+            return Result.failure("Given directory is not a directory. " + childDir.getAbsolutePath());
         }
         return Result.success(null);
     }
@@ -53,7 +57,9 @@ public class Config
     public String toString()
     {
         return "Config{" +
-                "dir=" + dir +
+                "targetDirectory=" + targetDirectory +
+                ", triageDirectory=" + triageDirectory +
+                ", archiveDirectory=" + archiveDirectory +
                 '}';
     }
 }

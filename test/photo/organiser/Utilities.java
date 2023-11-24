@@ -47,9 +47,56 @@ public abstract class Utilities
         }
     }
 
-    private static FileTime toFileTime(LocalDateTime timeInThePast)
+    public static FileTime toFileTime(LocalDateTime dateTime)
     {
-        Instant instant = timeInThePast.toInstant(ZONE_OFFSET);
-        return FileTime.fromMillis(instant.toEpochMilli());
+        Instant instant = dateTime.toInstant(ZONE_OFFSET);
+        return toFileTime(instant.toEpochMilli());
+    }
+
+    public static FileTime toFileTime(long epochMillis)
+    {
+        return FileTime.fromMillis(epochMillis);
+    }
+
+    public static LocalDateTime getCreationTime(File file)
+    {
+        try
+        {
+            BasicFileAttributeView attributes = Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class);
+            FileTime fileTime = attributes.readAttributes().creationTime();
+            return fileTime.toInstant().atZone(ZONE_OFFSET).toLocalDateTime();
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static LocalDateTime getLastAccessedTime(File file)
+    {
+        try
+        {
+            BasicFileAttributeView attributes = Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class);
+            FileTime fileTime = attributes.readAttributes().lastAccessTime();
+            return fileTime.toInstant().atZone(ZONE_OFFSET).toLocalDateTime();
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static LocalDateTime getModifiedTime(File file)
+    {
+        try
+        {
+            BasicFileAttributeView attributes = Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class);
+            FileTime fileTime = attributes.readAttributes().lastModifiedTime();
+            return fileTime.toInstant().atZone(ZONE_OFFSET).toLocalDateTime();
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 }

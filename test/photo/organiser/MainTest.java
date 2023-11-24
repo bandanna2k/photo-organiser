@@ -21,8 +21,8 @@ public class MainTest
     private Main main;
     private Thread appThread;
     private File photos;
-    private File duplicates;
-    private File awaiting;
+    private File archive;
+    private File traige;
 
     @Before
     public void setUp() throws Exception
@@ -31,19 +31,21 @@ public class MainTest
         PipedInputStream pis = new PipedInputStream(pos);
         OutputStreamWriter osw = new OutputStreamWriter(pos);
         user = new PrintWriter(osw, true);
-        main = new Main(pis);
 
         File tempDir = temporaryFolder.newFolder();
         photos = new File(tempDir, "Photos");
         photos.mkdir();
-        duplicates = new File(tempDir, "Duplicates");
-        duplicates.mkdir();
-        awaiting = new File(tempDir, "Awaiting");
-        awaiting.mkdir();
+        archive = new File(tempDir, "Archive");
+        archive.mkdir();
+        traige = new File(tempDir, "Triage");
+        traige.mkdir();
+
+        Config config = new Config(new String[] { photos.getAbsolutePath(), archive.getAbsolutePath(), traige.getAbsolutePath() });
+        main = new Main(config, pis);
 
         addImages();
 
-        appThread = new Thread(() -> main.start(new Config(new String[]{tempDir.getAbsolutePath()})));
+        appThread = new Thread(() -> main.start());
         appThread.start();
     }
 
@@ -89,7 +91,7 @@ public class MainTest
         {
             URL resource = this.getClass().getResource(name);
             assert resource != null : "Null resource";
-            Files.copy(Path.of(resource.toURI()), new File(awaiting, image).toPath());
+            Files.copy(Path.of(resource.toURI()), new File(traige, image).toPath());
         }
         catch (URISyntaxException | IOException e)
         {
