@@ -60,5 +60,7 @@ public class MoveActionTest
         Assertions.assertThat(source.exists()).isFalse();
         Assertions.assertThat(destination.exists()).isTrue();
         Assertions.assertThat(Utilities.getCreationTime(destination)).isEqualTo(TIME_1);
+        Assertions.assertThat(Utilities.getModifiedTime(destination)).isEqualTo(TIME_2);
+        Assertions.assertThat(Utilities.getLastAccessedTime(destination)).isEqualTo(TIME_3);
     }
 }
