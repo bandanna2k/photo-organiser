@@ -8,16 +8,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class ArchiveCommandsTest
 {
@@ -41,6 +43,19 @@ public class ArchiveCommandsTest
     public void tearDown()
     {
         temporaryFolder.delete();
+    }
+
+    @Test
+    public void shouldTarSimply() throws IOException
+    {
+        Path newFile = temporaryFolder.newFile("simple.txt").toPath();
+
+        Result<Integer, String> resultTar = new ArchiveCommands.Tar(root, root.resolve("archive.tar.gz"))
+                .withSource(newFile)
+                .execute();
+        assertThat(resultTar.success()).isEqualTo(0);
+        assertDirectory(root,
+                "archive.tar.gz");
     }
 
     @Test
@@ -92,12 +107,12 @@ public class ArchiveCommandsTest
         );
     }
 
-    private void assertDirectory(Path root, String... archiveFilenames) throws IOException
+    private void assertDirectory(Path path, String... archiveFilenames) throws IOException
     {
         List<Path> files = new ArrayList<>();
         List<Path> expectedFiles = new ArrayList<>(Arrays.stream(archiveFilenames)
-                .map(root::resolve).collect(Collectors.toList()));
-        Files.walkFileTree(root, new SimpleFileVisitor<>()
+                .map(path::resolve).collect(Collectors.toList()));
+        Files.walkFileTree(path, new SimpleFileVisitor<>()
         {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
@@ -127,14 +142,36 @@ public class ArchiveCommandsTest
     }
 
     @Test
-    public void shouldTarRelativeFilenames()
+    public void shouldTarAbsoluteFilenames() throws IOException
     {
-fail();
+        Path tempFile = Files.createTempFile("tempDir", ".txt");
+
+        Path tarFile = root.resolve("archive.tar.gz");
+        Result<Integer, String> resultTar = new ArchiveCommands.Tar(root, tarFile)
+                .withSource(tempFile)
+                .execute();
+        assertThat(resultTar.success()).isEqualTo(0);
+        assertDirectory(root,
+                "archive.tar.gz");
+
+        Result<Integer, String> resultUntar = new ArchiveCommands.Untar(root, tarFile).execute();
+        assertThat(resultUntar.success()).isEqualTo(0);
+        assertDirectory(root,
+                "archive.tar.gz",
+                root + tempFile.toString());
     }
 
     @Test
-    public void shouldTarADirectory()
+    public void shouldTarADirectory() throws IOException
     {
-        fail();
+        Path newFolder = temporaryFolder.newFolder("aDirectory").toPath();
+        Files.writeString(newFolder.resolve("fileInFolder.txt"), IT_WAS___, CREATE_NEW);
+
+        Result<Integer, String> resultTar = new ArchiveCommands.Tar(root, root.resolve("archive.tar.gz"))
+                .withSource(newFolder)
+                .execute();
+        assertThat(resultTar.success()).isEqualTo(0);
+        assertDirectory(root,
+                "archive.tar.gz");
     }
 }

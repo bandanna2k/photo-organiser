@@ -53,19 +53,19 @@ public abstract class ArchiveCommands extends Command
 
     public static class Untar extends Command
     {
-        private final Path source;
+        private final Path tarFile;
         private final Path workingDirectory;
 
-        public Untar(Path workingDirectory, Path source)
+        public Untar(Path workingDirectory, Path tarFile)
         {
             this.workingDirectory = workingDirectory;
-            this.source = source;
+            this.tarFile = tarFile;
         }
 
         @Override
         public Result<Integer, String> execute()
         {
-            return execute("tar xvf " + source.toString(), workingDirectory);
+            return execute("tar xvf " + tarFile.toString(), workingDirectory);
         }
     }
 }
