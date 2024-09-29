@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -45,14 +44,14 @@ public class FindDuplicatesTest
 
         findDuplicatesAndCollect();
 
-        assertThat(collector.sizeToDuplicates.size()).isEqualTo(1);
+        assertThat(collector.sizeHashToFiles.size()).isEqualTo(1);
 
-        List<FindDuplicates.FileData> values = collector.sizeToDuplicates.values().stream().findFirst().get();
+        List<Path> values = collector.sizeHashToFiles.values().stream().findFirst().get();
         assertThat(values.size()).isEqualTo(2);
     }
 
     @Test
-    public void shouldFindDuplicatesNeedingHash() throws IOException
+    public void shouldFindNoDuplicates() throws IOException
     {
         Files.writeString(new File(source.toFile(), "file1").toPath(), "unique");
         Files.writeString(new File(source.toFile(), "file2").toPath(), "same");
@@ -60,10 +59,7 @@ public class FindDuplicatesTest
 
         findDuplicatesAndCollect();
 
-        assertThat(collector.sizeToDuplicates.size()).isEqualTo(1);
-
-        List<FindDuplicates.FileData> values = collector.sizeToDuplicates.values().stream().findFirst().get();
-        assertThat(values.size()).isEqualTo(2);
+        assertThat(collector.sizeHashToFiles.size()).isEqualTo(0);
     }
 
     private void findDuplicatesAndCollect() throws IOException
@@ -78,14 +74,14 @@ public class FindDuplicatesTest
 fail();
     }
 
-    private static class DuplicateCollector implements BiConsumer<Long, List<FindDuplicates.FileData>>
+    private static class DuplicateCollector implements BiConsumer<SizeHash, List<Path>>
     {
-        final Map<Long, List<FindDuplicates.FileData>> sizeToDuplicates = new HashMap<>();
+        final Map<SizeHash, List<Path>> sizeHashToFiles = new HashMap<>();
 
         @Override
-        public void accept(Long size, List<FindDuplicates.FileData> listOfDuplicates)
+        public void accept(SizeHash sizeHash, List<Path> paths)
         {
-            sizeToDuplicates.put(size, listOfDuplicates);
+            sizeHashToFiles.put(sizeHash, paths);
         }
     }
 }

@@ -28,10 +28,12 @@ public class FindDuplicates
 {
     private final Path sourceDirecotry;
 
-    private Map<Long, SizeRecord> sizeToFileData = new HashMap<>();
+    private Map<SizeHash, List<Path>> sizeHashToFiles = new HashMap<>();
+    private Hasher hasher;
 
     public FindDuplicates(Path sourceDirectory)
     {
+        this.hasher = new MD5Hasher();
         this.sourceDirecotry = sourceDirectory;
     }
 
@@ -43,24 +45,26 @@ public class FindDuplicates
             public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) throws IOException
             {
                 File file = filePath.toFile();
-                SizeRecord sizeRecord = sizeToFileData.computeIfAbsent(file.length(), SizeRecord::new);
-
-                FileData fileData = new FileData(filePath);
-                sizeRecord.listOfFileData.add(fileData);
-
-                sizeRecord.processAnyHashes();
+                SizeHash sizeHash = new SizeHash(file.length(), hasher.hash(filePath));
+                List<Path> files = sizeHashToFiles.computeIfAbsent(sizeHash, sh -> new ArrayList<>());
+                files.add(filePath);
 
                 return super.visitFile(filePath, attrs);
             }
         });
     }
 
-    public void forEachDuplicate(BiConsumer<Long, List<FileData>> consumer)
+    private String hash(Path filePath, int max)
     {
-        sizeToFileData.forEach((size, sizeRecord) -> {
-            if(sizeRecord.listOfFileData.size() > 1)
+        return null;
+    }
+
+    public void forEachDuplicate(BiConsumer<SizeHash, List<Path>> consumer)
+    {
+        sizeHashToFiles.forEach((sizeHash, listOfFiles) -> {
+            if(listOfFiles.size() > 1)
             {
-                consumer.accept(size, sizeRecord.listOfFileData);
+                consumer.accept(sizeHash, listOfFiles);
             }
         });
     }
