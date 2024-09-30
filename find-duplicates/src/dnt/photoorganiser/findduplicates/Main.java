@@ -1,6 +1,7 @@
 package dnt.photoorganiser.findduplicates;
 
 import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 import dnt.photoorganiser.findduplicates.archiver.TarArchiver;
 import dnt.photoorganiser.findduplicates.choosers.AlphabeticalPathChooser;
 
@@ -22,6 +23,10 @@ public class Main implements Closeable
     {
         Config config = new Config();
         JCommander.newBuilder().addObject(config).args(args).build();
+        if(config.directories.size() != 3)
+        {
+            throw new ParameterException("3 directories required.");
+        }
         return config;
     }
 

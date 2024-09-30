@@ -1,53 +1,32 @@
 package dnt.photoorganiser.findduplicates;
 
-import com.beust.jcommander.IParameterValidator;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.*;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
-class Config
+public class Config
 {
-    //        @Parameter(
-//                required = true,
-//                description = "Primary directory. Any files in here are treated as 'source of truth'.",
-//                converter = PathConverter.class
-//        )
-//        public Path primaryDirectory;
-//
-//        @Parameter(
-//                required = true,
-//                description = "Secondary directory.",
-//                converter = PathConverter.class
-//        )
-//        public Path secondaryDirectory;
-//
-//        @Parameter(
-//                required = true,
-//                description = "Archive directory.",
-//                converter = PathConverter.class
-//        )
-//        public Path archiveDirectory;
     @Parameter(
             required = true,
             validateWith = FindDuplicatesDirectoriesValidator.class
     )
-    public List<String> directories;
+    public List<Path> directories;
 
     public Path getSecondaryDirectory()
     {
-        return Path.of(directories.get(1));
+        return directories.get(1);
     }
 
     public Path getArchiveDirectory()
     {
-        return Path.of(directories.get(2));
+        return directories.get(2);
     }
 
     public Path getPrimaryDirectory()
     {
-        return Path.of(directories.getFirst());
+        return directories.getFirst();
     }
 
     public static class FindDuplicatesDirectoriesValidator implements IParameterValidator
@@ -60,6 +39,26 @@ class Config
             {
                 throw new ParameterException("Path not found: " + value);
             }
+        }
+    }
+
+    public static class ListConverter implements IStringConverter<List<Path>>
+    {
+        @Override
+        public List<Path> convert(String files)
+        {
+            System.out.println("Converting");
+            String [] paths = files.split(" ");
+            List<Path> pathList = new ArrayList<>();
+            for(String path : paths)
+            {
+                pathList.add(Path.of(path));
+            }
+            if(pathList.size() != 3)
+            {
+                throw new ParameterException("3 Directories must be provided.");
+            }
+            return List.of();
         }
     }
 }
