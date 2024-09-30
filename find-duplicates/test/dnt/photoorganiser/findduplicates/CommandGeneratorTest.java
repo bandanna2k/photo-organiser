@@ -16,7 +16,7 @@ public class CommandGeneratorTest
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private Path source;
-    private CollectSizeHashFiles collectSizeHashFiles;
+    private FileSizeHashCollector fileSizeHashCollector;
     private CommandCollector commandCollector;
 
     @Before
@@ -28,8 +28,8 @@ public class CommandGeneratorTest
 
         commandCollector = new CommandCollector();
 
-        collectSizeHashFiles = new CollectSizeHashFiles(source);
-        commandGenerator = new CommandGenerator(collectSizeHashFiles, new LongestPathChooser());
+        fileSizeHashCollector = new FileSizeHashCollector(source);
+        commandGenerator = new CommandGenerator(fileSizeHashCollector, new LongestPathChooser());
     }
 
 

@@ -14,7 +14,7 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
-public class CollectSizeHashFilesTest extends FileHashGeneratorBase
+public class FileSizeHashCollectorTest extends FileHashGeneratorBase
 {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -28,7 +28,7 @@ public class CollectSizeHashFilesTest extends FileHashGeneratorBase
         source = temporaryFolder.newFolder("Pit").toPath();
   //      archive = temporaryFolder.newFolder("Archive").toPath();
 
-        collectSizeHashFiles = new CollectSizeHashFiles(source);
+        fileSizeHashCollector = new FileSizeHashCollector(source);
     }
 
     @Test

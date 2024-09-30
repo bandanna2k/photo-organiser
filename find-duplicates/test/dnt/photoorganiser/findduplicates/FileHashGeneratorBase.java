@@ -4,13 +4,13 @@ import java.io.IOException;
 
 public abstract class FileHashGeneratorBase
 {
-    protected CollectSizeHashFiles collectSizeHashFiles;
+    protected FileSizeHashCollector fileSizeHashCollector;
     protected final SizeHashFilesCollector collector = new SizeHashFilesCollector();
 
     protected void findDuplicatesAndCollect() throws IOException
     {
-        collectSizeHashFiles.walkSource();
-        collectSizeHashFiles.forEachSizeHash(collector);
+        fileSizeHashCollector.walkSource();
+        fileSizeHashCollector.forEachSizeHash(collector);
     }
 
 }

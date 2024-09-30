@@ -11,10 +11,10 @@ import java.util.List;
 
 public class CommandGenerator
 {
-    private final CollectSizeHashFiles findDuplicates;
+    private final FileSizeHashCollector findDuplicates;
     private final Chooser chooser;
 
-    public CommandGenerator(CollectSizeHashFiles findDuplicates, Chooser chooser)
+    public CommandGenerator(FileSizeHashCollector findDuplicates, Chooser chooser)
     {
         this.findDuplicates = findDuplicates;
         this.chooser = chooser;

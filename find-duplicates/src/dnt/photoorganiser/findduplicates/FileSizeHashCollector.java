@@ -27,14 +27,14 @@ mkdir /tmp/Archive/tmpr
 mv /tmp/Pit/tmp/IMG0001_Copy.jpg /tmp/Archive/tmp/
 ```
  */
-public class CollectSizeHashFiles
+public class FileSizeHashCollector
 {
     private final Path sourceDirectory;
 
     private Map<SizeHash, List<Path>> sizeHashToFiles = new HashMap<>();
     private Hasher hasher;
 
-    public CollectSizeHashFiles(Path sourceDirectory)
+    public FileSizeHashCollector(Path sourceDirectory)
     {
         this.hasher = new MD5Hasher();
         this.sourceDirectory = sourceDirectory;
