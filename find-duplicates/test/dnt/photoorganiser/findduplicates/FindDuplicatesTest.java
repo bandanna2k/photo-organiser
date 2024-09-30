@@ -2,7 +2,6 @@ package dnt.photoorganiser.findduplicates;
 
 import dnt.photoorganiser.findduplicates.archiver.Archiver;
 import dnt.photoorganiser.findduplicates.filesizehashcollector.FileSizeHashCollector;
-import dnt.photoorganiser.testing.DirectoryAssertions;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,7 +37,7 @@ public class FindDuplicatesTest extends TestBase
         archive = temporaryFolder.newFolder("Archive").toPath();
 
         archiver = new TestArchiver();
-        findDuplicates = new FindDuplicates(album, pit, archive, new LongestPathChooser(), archiver);
+        findDuplicates = new FindDuplicates(album, pit, new LongestPathChooser(), archiver);
     }
 
     @Test

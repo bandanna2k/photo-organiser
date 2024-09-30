@@ -24,9 +24,7 @@ public class FileSizeHashCollectorTest extends FileSizeHashCollectorTestBase
     @Before
     public void setUp() throws IOException
     {
-//        destination = temporaryFolder.newFolder("Album").toPath();
         source = temporaryFolder.newFolder("Pit").toPath();
-  //      archive = temporaryFolder.newFolder("Archive").toPath();
 
         fileSizeHashCollector = new FileSizeHashCollector(source);
     }
@@ -61,11 +59,5 @@ public class FileSizeHashCollectorTest extends FileSizeHashCollectorTestBase
         findDuplicatesAndCollect();
 
         assertThat(collector.sizeHashToFiles.size()).isEqualTo(3);
-    }
-
-    @Test
-    public void duplicateIsInTheDestinationDirectory()
-    {
-fail();
     }
 }

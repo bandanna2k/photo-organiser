@@ -6,7 +6,6 @@ import dnt.photoorganiser.findduplicates.filesizehashcollector.SizeHash;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,22 +16,16 @@ public class FindDuplicates
     private final Chooser chooser;
     private final FileSizeHashCollector primaryDirectoryCollector;
     private final FileSizeHashCollector pitDirectoryCollector;
-    private final Path archiveDirectory;
     private final Archiver archiver;
-
-    private final SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy_HH-mm-ss");
-    private int counter = 1;
 
     public FindDuplicates(Path primaryDirectory,
                           Path pitDirectory,
-                          Path archiveDirectory,
                           Chooser chooser,
                           Archiver archiver)
     {
         primaryDirectoryCollector = new FileSizeHashCollector(primaryDirectory);
         pitDirectoryCollector = new FileSizeHashCollector(pitDirectory);
 
-        this.archiveDirectory = archiveDirectory;
         this.chooser = chooser;
         this.archiver = archiver;
     }
