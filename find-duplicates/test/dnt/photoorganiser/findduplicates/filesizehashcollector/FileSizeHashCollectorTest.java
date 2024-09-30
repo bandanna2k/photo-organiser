@@ -1,4 +1,4 @@
-package dnt.photoorganiser.findduplicates;
+package dnt.photoorganiser.findduplicates.filesizehashcollector;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -9,12 +9,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
-public class FileSizeHashCollectorTest extends FileHashGeneratorBase
+public class FileSizeHashCollectorTest extends FileSizeHashCollectorTestBase
 {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();

@@ -1,4 +1,4 @@
-package dnt.photoorganiser.findduplicates;
+package dnt.photoorganiser.findduplicates.filesizehashcollector;
 
 public record SizeHash(
         Long size,

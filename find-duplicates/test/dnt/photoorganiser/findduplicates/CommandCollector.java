@@ -18,6 +18,6 @@ class CommandCollector implements Consumer<BatchOfCommands>
     @Override
     public void accept(BatchOfCommands batchOfCommands)
     {
-        commands.forEach(commands::add);
+        batchOfCommands.forEach(commands::add);
     }
 }

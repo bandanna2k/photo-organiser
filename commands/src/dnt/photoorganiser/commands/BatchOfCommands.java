@@ -17,4 +17,10 @@ public class BatchOfCommands
     {
         commands.forEach(consumer);
     }
+
+    public BatchOfCommands with(Command command)
+    {
+        commands.add(command);
+        return this;
+    }
 }

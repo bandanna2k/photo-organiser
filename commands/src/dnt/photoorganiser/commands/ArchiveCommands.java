@@ -13,16 +13,17 @@ public abstract class ArchiveCommands extends Command
 {
     public static class Tar extends Command
     {
-        private final List<Path> sourceDirectories = new ArrayList<>();
-        private final List<File> sourceFiles = new ArrayList<>();
-        private final Path destination;
         private final Path workingDirectory;
 
-        public Tar(Path workingDirectory, Path destination)
+        private final Path destinationFilePath;
+        private final List<Path> sourceDirectories = new ArrayList<>();
+        private final List<File> sourceFiles = new ArrayList<>();
+
+        public Tar(Path workingDirectory, Path destinationFilePath)
         {
-            assert destination.toString().endsWith(".tar.gz");
+            assert destinationFilePath.toString().endsWith(".tar.gz");
             this.workingDirectory = workingDirectory;
-            this.destination = destination;
+            this.destinationFilePath = destinationFilePath;
         }
 
         @Override
@@ -30,7 +31,7 @@ public abstract class ArchiveCommands extends Command
         {
             String files = sourceFiles.stream().map(File::getAbsolutePath).collect(Collectors.joining(" "));
             String directories = sourceDirectories.stream().map(Path::toString).collect(Collectors.joining(" "));
-            String command = "tar czvf " + destination.toString() +
+            String command = "tar czvf " + destinationFilePath.toString() +
                     " " + files +
                     " " + directories +
                     " --remove-files";
@@ -48,6 +49,17 @@ public abstract class ArchiveCommands extends Command
         {
             sourceFiles.addAll(Arrays.asList(files));
             return this;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "Tar{" +
+                    "workingDirectory=" + workingDirectory +
+                    ", destinationFilePath=" + destinationFilePath +
+                    ", sourceDirectories=" + sourceDirectories +
+                    ", sourceFiles=" + sourceFiles +
+                    "} " + super.toString();
         }
     }
 

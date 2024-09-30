@@ -9,11 +9,11 @@ public class LongestPathChooser implements Chooser
     public int choose(List<Path> paths)
     {
         int result = -1;
-        Path longestPath = Path.of("/");
+        Path longestPath = null;
         for (int i = 0; i < paths.size(); i++)
         {
             Path filePath = paths.get(i);
-            if(filePath.toString().length() > longestPath.toString().length())
+            if(longestPath == null || filePath.toString().compareTo(longestPath.toString()) < 0)
             {
                 longestPath = filePath;
                 result = i;

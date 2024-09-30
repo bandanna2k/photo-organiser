@@ -1,6 +1,7 @@
 package dnt.photoorganiser.commands;
 
 import dnt.common.Result;
+import dnt.photoorganiser.testing.DirectoryAssertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.After;
 import org.junit.Before;
@@ -17,6 +18,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static dnt.photoorganiser.testing.DirectoryAssertions.*;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -105,40 +107,6 @@ public class ArchiveCommandsTest
                 "extractLocation/tarAndUntar.log",
                 "extractLocation/subFolder/tarAndUntar.txt"
         );
-    }
-
-    private void assertDirectory(Path path, String... archiveFilenames) throws IOException
-    {
-        List<Path> files = new ArrayList<>();
-        List<Path> expectedFiles = new ArrayList<>(Arrays.stream(archiveFilenames)
-                .map(path::resolve).collect(Collectors.toList()));
-        Files.walkFileTree(path, new SimpleFileVisitor<>()
-        {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
-            {
-                files.add(file);
-                return super.visitFile(file, attrs);
-            }
-        });
-        SoftAssertions softly = new SoftAssertions();
-
-        Iterator<Path> iterator = expectedFiles.iterator();
-        while(iterator.hasNext())
-        {
-            Path expectedFile = iterator.next();
-            softly.assertThat(files.remove(expectedFile))
-                    .describedAs("File not found. " + expectedFile)
-                    .isTrue();
-            iterator.remove();
-        }
-        softly.assertThat(expectedFiles)
-                .describedAs("Expected files not accounted for: \n" + expectedFiles.stream().map(Path::toString).collect(Collectors.joining("\n")))
-                .isEmpty();
-        softly.assertThat(files)
-                .describedAs("Other files found: \n" + files.stream().map(Path::toString).collect(Collectors.joining("\n")))
-                .isEmpty();
-        softly.assertAll();
     }
 
     @Test

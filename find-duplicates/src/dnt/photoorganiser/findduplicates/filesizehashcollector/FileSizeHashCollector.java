@@ -1,4 +1,4 @@
-package dnt.photoorganiser.findduplicates;
+package dnt.photoorganiser.findduplicates.filesizehashcollector;
 
 import dnt.photoorganiser.findduplicates.hashing.Hasher;
 import dnt.photoorganiser.findduplicates.hashing.MD5Hasher;
@@ -29,7 +29,7 @@ mv /tmp/Pit/tmp/IMG0001_Copy.jpg /tmp/Archive/tmp/
  */
 public class FileSizeHashCollector
 {
-    private final Path sourceDirectory;
+    public final Path sourceDirectory;
 
     private Map<SizeHash, List<Path>> sizeHashToFiles = new HashMap<>();
     private Hasher hasher;
