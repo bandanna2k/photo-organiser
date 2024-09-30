@@ -4,9 +4,12 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import dnt.photoorganiser.findduplicates.archiver.TarArchiver;
 import dnt.photoorganiser.findduplicates.choosers.AlphabeticalPathChooser;
+import dnt.photoorganiser.findduplicates.choosers.ChooserFactory;
 
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Main implements Closeable
 {
@@ -37,9 +40,11 @@ public class Main implements Closeable
 
     public Main(Config config)
     {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        ChooserFactory chooserFactory = new ChooserFactory(reader);
         archiver = new TarArchiver("archive", config.getSecondaryDirectory(), config.getArchiveDirectory());
         findDuplicates = new FindDuplicates(config.getPrimaryDirectory(), config.getSecondaryDirectory(),
-                new AlphabeticalPathChooser(),
+                chooserFactory.newInstance(config.chooser),
                 archiver);
     }
 

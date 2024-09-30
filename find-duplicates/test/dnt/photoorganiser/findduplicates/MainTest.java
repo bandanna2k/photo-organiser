@@ -1,6 +1,7 @@
 package dnt.photoorganiser.findduplicates;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -11,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static dnt.photoorganiser.testing.DirectoryAssertions.assertDirectoryUsingRegex;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class MainTest
 {
@@ -43,6 +43,7 @@ public class MainTest
                 root + "/Album",
                 root + "/Pit",
                 root + "/Archive",
+                "--chooser", "AutoChooser"
         };
         try (Main app = new Main(args))
         {
@@ -55,16 +56,21 @@ public class MainTest
     }
 
     @Test
-    public void testGetConfig()
+    @Ignore // Manual test
+    public void shouldRunFromCommandLine() throws IOException
     {
+        Files.writeString(new File(secondaryDirectory.toFile(), "file1").toPath(), "unique");
+        Files.writeString(new File(secondaryDirectory.toFile(), "file2").toPath(), "same");
+        Files.writeString(new File(secondaryDirectory.toFile(), "file3").toPath(), "same");
+
         String[] args = {
                 root + "/Album",
                 root + "/Pit",
                 root + "/Archive",
         };
-        Config config = Main.getConfig(args);
-        assertThat(config.getPrimaryDirectory()).isNotNull();
-        assertThat(config.getSecondaryDirectory()).isNotNull();
-        assertThat(config.getArchiveDirectory()).isNotNull();
+        try (Main app = new Main(args))
+        {
+            app.start();
+        }
     }
 }

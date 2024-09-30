@@ -39,6 +39,7 @@ public class ConfigTest
                 root + "/Album",
                 root + "/Pit",
                 root + "/Archive",
+                "--chooser", "AutoChooser"
         };
         Config config = Main.getConfig(args);
         assertThat(config.getPrimaryDirectory()).isNotNull();

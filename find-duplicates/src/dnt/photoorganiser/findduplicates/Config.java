@@ -14,6 +14,14 @@ public class Config
     )
     public List<Path> directories;
 
+    @Parameter(names = {"--chooser"})
+    public ChooserType chooser = ChooserType.CommandLineChooser;
+    public enum ChooserType
+    {
+        AutoChooser,
+        CommandLineChooser
+    }
+
     public Path getSecondaryDirectory()
     {
         return directories.get(1);
