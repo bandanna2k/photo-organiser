@@ -1,4 +1,4 @@
-package dnt.photoorganiser.findduplicates;
+package dnt.photoorganiser.findduplicates.choosers;
 
 import java.nio.file.Path;
 import java.util.List;

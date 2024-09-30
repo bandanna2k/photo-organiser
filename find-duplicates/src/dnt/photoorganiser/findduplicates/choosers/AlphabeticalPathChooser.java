@@ -1,9 +1,9 @@
-package dnt.photoorganiser.findduplicates;
+package dnt.photoorganiser.findduplicates.choosers;
 
 import java.nio.file.Path;
 import java.util.List;
 
-public class LongestPathChooser implements Chooser
+public class AlphabeticalPathChooser implements Chooser
 {
     @Override
     public int choose(List<Path> paths)

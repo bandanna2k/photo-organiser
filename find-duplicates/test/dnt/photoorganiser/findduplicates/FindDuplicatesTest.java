@@ -1,6 +1,7 @@
 package dnt.photoorganiser.findduplicates;
 
 import dnt.photoorganiser.findduplicates.archiver.Archiver;
+import dnt.photoorganiser.findduplicates.choosers.AlphabeticalPathChooser;
 import dnt.photoorganiser.findduplicates.filesizehashcollector.FileSizeHashCollector;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,7 +38,7 @@ public class FindDuplicatesTest extends TestBase
         archive = temporaryFolder.newFolder("Archive").toPath();
 
         archiver = new TestArchiver();
-        findDuplicates = new FindDuplicates(album, pit, new LongestPathChooser(), archiver);
+        findDuplicates = new FindDuplicates(album, pit, new AlphabeticalPathChooser(), archiver);
     }
 
     @Test
@@ -47,7 +48,7 @@ public class FindDuplicatesTest extends TestBase
         Files.writeString(new File(pit.toFile(), "file2").toPath(), "same");
         Files.writeString(new File(pit.toFile(), "file3").toPath(), "same");
 
-        findDuplicates.forEachDuplicates();
+        findDuplicates.find();
 
         assertThat(archiver.archivedFiles.size()).isEqualTo(1);
         assertThat(archiver.archivedFiles.getFirst().toString()).endsWith("file3");
@@ -65,7 +66,7 @@ public class FindDuplicatesTest extends TestBase
         Files.writeString(new File(pit.toFile(), "file3").toPath(), "same2");
         Files.writeString(new File(pit.toFile(), "file4").toPath(), "same2");
 
-        findDuplicates.forEachDuplicates();
+        findDuplicates.find();
 
         assertThat(archiver.archivedFiles.size()).isEqualTo(2);
         assertDirectory(temporaryFolder.getRoot().toPath(),

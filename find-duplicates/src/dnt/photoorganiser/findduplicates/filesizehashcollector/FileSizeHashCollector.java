@@ -31,8 +31,8 @@ public class FileSizeHashCollector
 {
     public final Path sourceDirectory;
 
-    private Map<SizeHash, List<Path>> sizeHashToFiles = new HashMap<>();
-    private Hasher hasher;
+    private final Map<SizeHash, List<Path>> sizeHashToFiles = new HashMap<>();
+    private final Hasher hasher;
 
     public FileSizeHashCollector(Path sourceDirectory)
     {
@@ -60,52 +60,5 @@ public class FileSizeHashCollector
     public void forEachSizeHash(BiConsumer<SizeHash, List<Path>> consumer)
     {
         sizeHashToFiles.forEach(consumer);
-    }
-
-    private static class SizeRecord
-    {
-        final long size;
-        final List<FileData> listOfFileData = new ArrayList<>();
-
-        public SizeRecord(Long size)
-        {
-            this.size = size;
-        }
-
-        public void processAnyHashes()
-        {
-            if (listOfFileData.size() > 1)
-            {
-                listOfFileData.forEach(FileData::setHash);
-            }
-        }
-    }
-
-    public static class FileData
-    {
-        final Path filePath;
-        Optional<String> hash = Optional.empty();
-
-        private FileData(Path filePath)
-        {
-            this.filePath = filePath;
-        }
-
-        public void setHash()
-        {
-            if (hash.isEmpty())
-            {
-                hash = Optional.of("sdfsdfs");
-            }
-        }
-
-        @Override
-        public String toString()
-        {
-            return "FileData{" +
-                    "filePath=" + filePath +
-                    ", hash=" + hash +
-                    '}';
-        }
     }
 }
