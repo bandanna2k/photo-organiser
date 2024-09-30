@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="dnt.common">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../common/out/artifacts/dnt_common/dnt.common.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
