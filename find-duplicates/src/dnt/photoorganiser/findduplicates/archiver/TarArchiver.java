@@ -3,13 +3,14 @@ package dnt.photoorganiser.findduplicates.archiver;
 import dnt.common.Result;
 import dnt.photoorganiser.commands.ArchiveCommands;
 
+import java.io.Closeable;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class TarArchiver implements Archiver, AutoCloseable
+public class TarArchiver implements Archiver, Closeable
 {
     private final String dateTimeString;
     private int counter = 1;
@@ -31,7 +32,7 @@ public class TarArchiver implements Archiver, AutoCloseable
     }
 
     @Override
-    public void close() throws Exception
+    public void close()
     {
         archive();
     }

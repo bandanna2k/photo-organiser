@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 import static dnt.photoorganiser.testing.DirectoryAssertions.assertDirectory;
 import static dnt.photoorganiser.testing.DirectoryAssertions.assertDirectoryUsingRegex;
@@ -22,14 +23,15 @@ public class ArchiverTest implements AutoCloseable
 
     private TarArchiver tarArchiver;
     private Path root;
+    private Path archiveDirectory;
 
     @Before
     public void setUp() throws IOException
     {
         root = temporaryFolder.getRoot().toPath();
 
-        Path directory = temporaryFolder.newFolder("Archive").toPath();
-        tarArchiver = new TarArchiver("test", temporaryFolder.getRoot().toPath(), directory);
+        archiveDirectory = temporaryFolder.newFolder("Archive").toPath();
+        tarArchiver = new TarArchiver("test", temporaryFolder.getRoot().toPath(), archiveDirectory);
     }
 
     @Test
@@ -43,6 +45,49 @@ public class ArchiverTest implements AutoCloseable
 
         assertDirectoryUsingRegex(root,
                 ".*Archive\\/test.*tar.gz"
+        );
+    }
+
+    @Test
+    public void shouldNotAutoArchiveFiles() throws IOException
+    {
+        ArrayList<Object> addedFiles = new ArrayList<>();
+        for (int i = 1; i < 10; i++)
+        {
+            String filename = "file" + i;
+            addedFiles.add(filename);
+            createFileAndArchive(filename, "content" + i);
+        }
+
+        assertDirectory(root, addedFiles.toArray(String[]::new));
+    }
+
+    @Test
+    public void shouldAutoArchiveFiles() throws IOException
+    {
+        for (int i = 1; i < 11; i++)
+        {
+            String filename = "file" + i;
+            createFileAndArchive(filename, "content" + i);
+        }
+        assertDirectoryUsingRegex(root,
+                ".*Archive\\/test.*tar.gz"
+        );
+    }
+
+    @Test
+    public void shouldAutoArchiveOnAutoClose() throws IOException
+    {
+        Path filePath = new File(temporaryFolder.getRoot(), "file").toPath();
+        Files.writeString(filePath, "content");
+
+        try(TarArchiver archiver = new TarArchiver("autoClose", root, archiveDirectory))
+        {
+            archiver.add(filePath);
+        }
+
+        assertDirectoryUsingRegex(root,
+                ".*Archive\\/autoClose.*tar.gz"
         );
     }
 
