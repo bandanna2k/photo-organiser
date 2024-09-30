@@ -10,19 +10,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.function.BiConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
-public class FindDuplicatesTest
+public class CollectSizeHashFilesTest extends FileHashGeneratorBase
 {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private FindDuplicates findDuplicates;
     private Path source;
-    private DuplicateCollector collector;
 
     @Before
     public void setUp() throws IOException
@@ -31,12 +28,11 @@ public class FindDuplicatesTest
         source = temporaryFolder.newFolder("Pit").toPath();
   //      archive = temporaryFolder.newFolder("Archive").toPath();
 
-        findDuplicates = new FindDuplicates(source);
-        collector = new DuplicateCollector();
+        collectSizeHashFiles = new CollectSizeHashFiles(source);
     }
 
     @Test
-    public void shouldFindDuplicates() throws IOException
+    public void shouldFindHashes() throws IOException
     {
         Files.writeString(new File(source.toFile(), "file1").toPath(), "unique");
         Files.writeString(new File(source.toFile(), "file2").toPath(), "same");
@@ -44,10 +40,15 @@ public class FindDuplicatesTest
 
         findDuplicatesAndCollect();
 
-        assertThat(collector.sizeHashToFiles.size()).isEqualTo(1);
-
-        List<Path> values = collector.sizeHashToFiles.values().stream().findFirst().get();
-        assertThat(values.size()).isEqualTo(2);
+        assertThat(collector.sizeHashToFiles.size()).isEqualTo(2);
+        {
+            List<Path> values = collector.sizeHashToFiles.values().stream().filter(l -> l.size() == 1).findFirst().get();
+            assertThat(values.size()).isEqualTo(1);
+        }
+        {
+            List<Path> values = collector.sizeHashToFiles.values().stream().filter(l -> l.size() == 2).findFirst().get();
+            assertThat(values.size()).isEqualTo(2);
+        }
     }
 
     @Test
@@ -59,29 +60,12 @@ public class FindDuplicatesTest
 
         findDuplicatesAndCollect();
 
-        assertThat(collector.sizeHashToFiles.size()).isEqualTo(0);
-    }
-
-    private void findDuplicatesAndCollect() throws IOException
-    {
-        findDuplicates.walkSource();
-        findDuplicates.forEachDuplicate(collector);
+        assertThat(collector.sizeHashToFiles.size()).isEqualTo(3);
     }
 
     @Test
     public void duplicateIsInTheDestinationDirectory()
     {
 fail();
-    }
-
-    private static class DuplicateCollector implements BiConsumer<SizeHash, List<Path>>
-    {
-        final Map<SizeHash, List<Path>> sizeHashToFiles = new HashMap<>();
-
-        @Override
-        public void accept(SizeHash sizeHash, List<Path> paths)
-        {
-            sizeHashToFiles.put(sizeHash, paths);
-        }
     }
 }

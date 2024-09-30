@@ -27,15 +27,16 @@ public class MoveCommandTest
     @Test
     public void shouldMoveFile() throws IOException
     {
-        File source = temporaryFolder.newFile();
+        Path source = temporaryFolder.newFile().toPath();
         Path destination = temporaryFolder.newFolder().toPath();
         System.out.println(source);
         System.out.println(destination);
 
         Result<Integer, String> moveResult = new MoveCommand(source, destination).execute();
         assertTrue(moveResult.isSuccess());
-        assertFalse(source.exists());
-        File movedFile = new File(destination.toFile(), source.getName());
+        File sourceFile = source.toFile();
+        assertFalse(sourceFile.exists());
+        File movedFile = new File(destination.toFile(), sourceFile.getName());
         assertTrue(movedFile.exists());
     }
 }

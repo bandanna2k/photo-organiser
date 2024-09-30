@@ -1,5 +1,8 @@
 package dnt.photoorganiser.findduplicates;
 
+import dnt.photoorganiser.findduplicates.hashing.Hasher;
+import dnt.photoorganiser.findduplicates.hashing.MD5Hasher;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -24,22 +27,22 @@ mkdir /tmp/Archive/tmpr
 mv /tmp/Pit/tmp/IMG0001_Copy.jpg /tmp/Archive/tmp/
 ```
  */
-public class FindDuplicates
+public class CollectSizeHashFiles
 {
-    private final Path sourceDirecotry;
+    private final Path sourceDirectory;
 
     private Map<SizeHash, List<Path>> sizeHashToFiles = new HashMap<>();
     private Hasher hasher;
 
-    public FindDuplicates(Path sourceDirectory)
+    public CollectSizeHashFiles(Path sourceDirectory)
     {
         this.hasher = new MD5Hasher();
-        this.sourceDirecotry = sourceDirectory;
+        this.sourceDirectory = sourceDirectory;
     }
 
     public void walkSource() throws IOException
     {
-        Files.walkFileTree(sourceDirecotry, new SimpleFileVisitor<>()
+        Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<>()
         {
             @Override
             public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) throws IOException
@@ -54,19 +57,9 @@ public class FindDuplicates
         });
     }
 
-    private String hash(Path filePath, int max)
+    public void forEachSizeHash(BiConsumer<SizeHash, List<Path>> consumer)
     {
-        return null;
-    }
-
-    public void forEachDuplicate(BiConsumer<SizeHash, List<Path>> consumer)
-    {
-        sizeHashToFiles.forEach((sizeHash, listOfFiles) -> {
-            if(listOfFiles.size() > 1)
-            {
-                consumer.accept(sizeHash, listOfFiles);
-            }
-        });
+        sizeHashToFiles.forEach(consumer);
     }
 
     private static class SizeRecord
@@ -81,7 +74,7 @@ public class FindDuplicates
 
         public void processAnyHashes()
         {
-            if(listOfFileData.size() > 1)
+            if (listOfFileData.size() > 1)
             {
                 listOfFileData.forEach(FileData::setHash);
             }
@@ -100,7 +93,7 @@ public class FindDuplicates
 
         public void setHash()
         {
-            if(hash.isEmpty())
+            if (hash.isEmpty())
             {
                 hash = Optional.of("sdfsdfs");
             }

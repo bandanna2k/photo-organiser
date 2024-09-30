@@ -7,10 +7,10 @@ import java.nio.file.Path;
 
 public class MoveCommand extends Command
 {
-    private final File source;
+    private final Path source;
     private final Path destination;
 
-    public MoveCommand(File source, Path destination)
+    public MoveCommand(Path source, Path destination)
     {
         this.source = source;
         this.destination = destination;
@@ -19,6 +19,6 @@ public class MoveCommand extends Command
     @Override
     public Result<Integer, String> execute()
     {
-        return execute("mv " + source.getAbsolutePath() + " " + destination.toString());
+        return execute("mv " + source + " " + destination);
     }
 }
