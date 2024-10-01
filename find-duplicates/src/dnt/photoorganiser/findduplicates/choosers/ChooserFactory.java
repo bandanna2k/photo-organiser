@@ -1,6 +1,7 @@
 package dnt.photoorganiser.findduplicates.choosers;
 
 import dnt.photoorganiser.findduplicates.Config;
+import dnt.photoorganiser.findduplicates.choosers.smartchooser.SmartChooser;
 
 import java.io.BufferedReader;
 
@@ -19,6 +20,7 @@ public class ChooserFactory
         {
             case AutoChooser -> new AlphabeticalPathChooser();
             case CommandLineChooser -> new CommandLineChooser(reader);
+            case SmartChooser -> new SmartChooser(reader);
         };
     }
 }

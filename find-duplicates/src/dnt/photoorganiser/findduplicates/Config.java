@@ -19,7 +19,8 @@ public class Config
     public enum ChooserType
     {
         AutoChooser,
-        CommandLineChooser
+        CommandLineChooser,
+        SmartChooser
     }
 
     public Path getSecondaryDirectory()
