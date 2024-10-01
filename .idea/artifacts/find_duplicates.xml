@@ -1,0 +1,17 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="find-duplicates">
+    <output-path>$PROJECT_DIR$/out/artifacts/find_duplicates</output-path>
+    <root id="archive" name="find-duplicates.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/find-duplicates/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="find-duplicates" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jcommander-2.0.jar" path-in-jar="/" />
+      <element id="module-output" name="commands" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../common/out/artifacts/dnt_common/dnt.common.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jackson-databind-2.13.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jackson-core-2.13.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jackson-annotations-2.13.3.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

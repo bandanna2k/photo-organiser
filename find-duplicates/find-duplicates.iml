@@ -14,5 +14,6 @@
     <orderEntry type="module" module-name="testing" scope="TEST" />
     <orderEntry type="library" exported="" name="dnt.common" level="project" />
     <orderEntry type="library" exported="" name="jcommander" level="project" />
+    <orderEntry type="library" name="fasterxml.jackson.core.databind" level="project" />
   </component>
 </module>
