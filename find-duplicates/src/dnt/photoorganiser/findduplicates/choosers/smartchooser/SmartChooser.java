@@ -1,13 +1,13 @@
 package dnt.photoorganiser.findduplicates.choosers.smartchooser;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dnt.photoorganiser.findduplicates.choosers.Chooser;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static dnt.photoorganiser.findduplicates.choosers.smartchooser.Score.score;
@@ -15,11 +15,48 @@ import static dnt.photoorganiser.findduplicates.choosers.smartchooser.Score.scor
 public class SmartChooser implements Chooser
 {
     private final BufferedReader reader;
-    private final List<Path> selectedPaths = new ArrayList<>();
+    private final ObjectMapper objectMapper;
+
+    Set<Path> selectedPaths = new TreeSet<>();
+
 
     public SmartChooser(BufferedReader reader)
     {
         this.reader = reader;
+        objectMapper = new ObjectMapper();
+        Runtime.getRuntime().addShutdownHook(new Thread(this::save));
+    }
+
+    public void load()
+    {
+        File file = new File("SmartChooser.json");
+        if(!file.exists()) return;
+
+        try
+        {
+            Path[] paths = objectMapper.readValue(file, Path[].class);
+            selectedPaths = new TreeSet<>(Arrays.stream(paths).toList());
+            System.out.println("INFO: Selected paths loaded.");
+        }
+        catch (Exception e)
+        {
+            System.err.println("ERROR: Failed to load. " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    void save()
+    {
+        try
+        {
+            File file = new File("SmartChooser.json");
+            Set<String> pathStrings = selectedPaths.stream().map(Path::toString).collect(Collectors.toSet());
+            objectMapper.writeValue(file, pathStrings);
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

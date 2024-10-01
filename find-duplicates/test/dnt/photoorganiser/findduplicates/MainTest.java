@@ -1,9 +1,6 @@
 package dnt.photoorganiser.findduplicates;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
@@ -30,6 +27,11 @@ public class MainTest
         primaryDirectory = temporaryFolder.newFolder("Album").toPath();
         secondaryDirectory = temporaryFolder.newFolder("Pit").toPath();
         archiveDirectory = temporaryFolder.newFolder("Archive").toPath();
+    }
+    @After
+    public void tearDown()
+    {
+        temporaryFolder.delete();
     }
 
     @Test

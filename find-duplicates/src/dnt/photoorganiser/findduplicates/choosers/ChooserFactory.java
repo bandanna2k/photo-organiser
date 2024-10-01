@@ -20,7 +20,12 @@ public class ChooserFactory
         {
             case AutoChooser -> new AlphabeticalPathChooser();
             case CommandLineChooser -> new CommandLineChooser(reader);
-            case SmartChooser -> new SmartChooser(reader);
+            case SmartChooser ->
+            {
+                SmartChooser smartChooser = new SmartChooser(reader);
+                smartChooser.load();
+                yield smartChooser;
+            }
         };
     }
 }
