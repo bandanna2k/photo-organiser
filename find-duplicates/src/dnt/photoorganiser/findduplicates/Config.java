@@ -17,7 +17,7 @@ public class Config
     public ChooserType chooser = ChooserType.CommandLineChooser;
 
     @Parameter(names = {"--max-tarred-files"})
-    public int maxFilesInATar = 25;
+    public int maxFilesInATar = 30;
 
     public enum ChooserType
     {

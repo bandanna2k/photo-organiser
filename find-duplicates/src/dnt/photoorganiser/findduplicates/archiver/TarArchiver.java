@@ -53,6 +53,8 @@ public class TarArchiver implements Archiver, Closeable
     {
         if(filePaths.isEmpty()) return;
 
+        System.out.printf("INFO: Archiving %d files%n", filePaths.size());
+
         String filename = String.format("%s.%s.%04d.tar.gz", prefix, dateTimeString, counter++);
         ArchiveCommands.Tar tarCommand = new ArchiveCommands.Tar(workingDirectory, archiveDirectory.resolve(filename));
         filePaths.forEach(tarCommand::withSource);
