@@ -41,9 +41,11 @@ public class Main implements Closeable
 
     public Main(Config config)
     {
+        System.out.println(config);
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         ChooserFactory chooserFactory = new ChooserFactory(reader);
-        archiver = new TarArchiver("archive", Path.of(System.getProperty("user.dir")), config.getArchiveDirectory());
+        archiver = new TarArchiver("archive", Path.of(System.getProperty("user.dir")), config.getArchiveDirectory(), config.maxFilesInATar);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> archiver.close()));
 
         findDuplicates = new FindDuplicates(config.getPrimaryDirectory(), config.getSecondaryDirectory(),

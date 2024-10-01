@@ -91,11 +91,29 @@ public class ArchiverTest implements AutoCloseable
         );
     }
 
+    @Test
+    public void shouldArchiveEveryXFiles() throws IOException
+    {
+        try (TarArchiver archiver = new TarArchiver("xFiles", temporaryFolder.getRoot().toPath(), archiveDirectory, 1))
+        {
+            createFileAndArchive("mulder", "fox", archiver);
+            createFileAndArchive("scully", "dana", archiver);
+        }
+        assertDirectoryUsingRegex(root,
+                ".*Archive\\/xFiles.*.0001.*.tar.gz",
+                ".*Archive\\/xFiles.*.0002.*.tar.gz"
+        );
+    }
+
     private void createFileAndArchive(String name, String content) throws IOException
+    {
+        createFileAndArchive(name, content, tarArchiver);
+    }
+    private void createFileAndArchive(String name, String content, Archiver archiver) throws IOException
     {
         Path filePath = new File(temporaryFolder.getRoot(), name).toPath();
         Files.writeString(filePath, content);
-        tarArchiver.add(root.relativize(filePath));
+        archiver.add(root.relativize(filePath));
     }
 
     @Override

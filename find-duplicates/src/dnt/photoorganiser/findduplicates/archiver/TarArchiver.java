@@ -15,14 +15,20 @@ public class TarArchiver implements Archiver, Closeable
     private final String dateTimeString;
     private int counter = 1;
 
-    private List<Path> filePaths = new ArrayList<>();
+    private final List<Path> filePaths = new ArrayList<>();
 
     private final String prefix;
     private final Path workingDirectory;
     private final Path archiveDirectory;
+    private final int maxFiles;
 
     public TarArchiver(String prefix, Path workingDirectory, Path archiveDirectory)
     {
+        this(prefix, workingDirectory, archiveDirectory, 10);
+    }
+    public TarArchiver(String prefix, Path workingDirectory, Path archiveDirectory, int maxFiles)
+    {
+        this.maxFiles = maxFiles;
         this.prefix = prefix;
         this.workingDirectory = workingDirectory;
         this.archiveDirectory = archiveDirectory;
@@ -39,7 +45,7 @@ public class TarArchiver implements Archiver, Closeable
 
     void maybeArchive()
     {
-        if(filePaths.size() < 10) return;
+        if(filePaths.size() < maxFiles) return;
 
         archive();
     }

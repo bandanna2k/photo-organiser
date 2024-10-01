@@ -3,7 +3,6 @@ package dnt.photoorganiser.findduplicates;
 import com.beust.jcommander.*;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Config
@@ -16,6 +15,10 @@ public class Config
 
     @Parameter(names = {"--chooser"})
     public ChooserType chooser = ChooserType.CommandLineChooser;
+
+    @Parameter(names = {"--max-tarred-files"})
+    public int maxFilesInATar = 10;
+
     public enum ChooserType
     {
         AutoChooser,
@@ -38,6 +41,16 @@ public class Config
         return directories.getFirst();
     }
 
+    @Override
+    public String toString()
+    {
+        return "Config{" +
+                "directories=" + directories +
+                ", chooser=" + chooser +
+                ", maxFilesInATar=" + maxFilesInATar +
+                '}';
+    }
+
     public static class FindDuplicatesDirectoriesValidator implements IParameterValidator
     {
         @Override
@@ -48,26 +61,6 @@ public class Config
             {
                 throw new ParameterException("Path not found: " + value);
             }
-        }
-    }
-
-    public static class ListConverter implements IStringConverter<List<Path>>
-    {
-        @Override
-        public List<Path> convert(String files)
-        {
-            System.out.println("Converting");
-            String [] paths = files.split(" ");
-            List<Path> pathList = new ArrayList<>();
-            for(String path : paths)
-            {
-                pathList.add(Path.of(path));
-            }
-            if(pathList.size() != 3)
-            {
-                throw new ParameterException("3 Directories must be provided.");
-            }
-            return List.of();
         }
     }
 }
