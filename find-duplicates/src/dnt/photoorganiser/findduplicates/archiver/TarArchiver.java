@@ -57,7 +57,7 @@ public class TarArchiver implements Archiver, Closeable
                     filePaths.clear();
                 },
                 failure -> {
-                    System.out.println("ERROR: " + failure);
+                    System.err.println("ERROR: " + failure);
                 });
     }
 

@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 
 public class Main implements Closeable
 {
@@ -42,7 +43,9 @@ public class Main implements Closeable
     {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         ChooserFactory chooserFactory = new ChooserFactory(reader);
-        archiver = new TarArchiver("archive", config.getSecondaryDirectory(), config.getArchiveDirectory());
+        archiver = new TarArchiver("archive", Path.of(System.getProperty("user.dir")), config.getArchiveDirectory());
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> archiver.close()));
+
         findDuplicates = new FindDuplicates(config.getPrimaryDirectory(), config.getSecondaryDirectory(),
                 chooserFactory.newInstance(config.chooser),
                 archiver);
