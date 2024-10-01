@@ -14,7 +14,7 @@ public class Config
     public List<Path> directories;
 
     @Parameter(names = {"--chooser"})
-    public ChooserType chooser = ChooserType.CommandLineChooser;
+    public ChooserType chooser = ChooserType.SmartChooser;
 
     @Parameter(names = {"--max-tarred-files"})
     public int maxFilesInATar = 30;
