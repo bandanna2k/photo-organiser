@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static dnt.photoorganiser.findduplicates.Config.ChooserType.AutoChooser;
 import static dnt.photoorganiser.testing.DirectoryAssertions.assertDirectoryUsingRegex;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -33,7 +34,24 @@ public class ConfigTest
     }
 
     @Test
-    public void shouldGetConfig()
+    public void shouldGetDefaultConfig()
+    {
+        String[] args = {
+                root + "/Album",
+                root + "/Pit",
+                root + "/Archive",
+        };
+        Config config = Main.getConfig(args);
+        assertThat(config.getPrimaryDirectory()).isNotNull();
+        assertThat(config.getSecondaryDirectory()).isNotNull();
+        assertThat(config.getArchiveDirectory()).isNotNull();
+        assertThat(config.allFiles).isFalse();
+        assertThat(config.extensions.size()).isEqualTo(3);
+        assertThat(config.maxFilesInATar).isEqualTo(30);
+    }
+
+    @Test
+    public void shouldGetChooser()
     {
         String[] args = {
                 root + "/Album",
@@ -42,9 +60,20 @@ public class ConfigTest
                 "--chooser", "AutoChooser"
         };
         Config config = Main.getConfig(args);
-        assertThat(config.getPrimaryDirectory()).isNotNull();
-        assertThat(config.getSecondaryDirectory()).isNotNull();
-        assertThat(config.getArchiveDirectory()).isNotNull();
+        assertThat(config.chooser).isEqualTo(AutoChooser);
+    }
+
+    @Test
+    public void shouldGetExtensions()
+    {
+        String[] args = {
+                root + "/Album",
+                root + "/Pit",
+                root + "/Archive",
+                "--extensions", "jpg,txt,log"
+        };
+        Config config = Main.getConfig(args);
+        assertThat(config.extensions.size()).isEqualTo(3);
     }
 
     @Test

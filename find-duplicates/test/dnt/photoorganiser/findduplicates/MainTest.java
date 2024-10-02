@@ -45,7 +45,8 @@ public class MainTest
                 root + "/Album",
                 root + "/Pit",
                 root + "/Archive",
-                "--chooser", "AutoChooser"
+                "--chooser", "AutoChooser",
+                "--all-files"
         };
         try (Main app = new Main(args))
         {

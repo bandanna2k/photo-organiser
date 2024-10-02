@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -26,7 +27,7 @@ public class FileSizeHashCollectorTest extends FileSizeHashCollectorTestBase
     {
         source = temporaryFolder.newFolder("Pit").toPath();
 
-        fileSizeHashCollector = new FileSizeHashCollector(source);
+        fileSizeHashCollector = new FileSizeHashCollector(source, true, emptySet());
     }
 
     @Test

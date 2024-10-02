@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static dnt.photoorganiser.testing.DirectoryAssertions.*;
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FindDuplicatesTest extends TestBase
@@ -38,7 +39,7 @@ public class FindDuplicatesTest extends TestBase
         archive = temporaryFolder.newFolder("Archive").toPath();
 
         archiver = new TestArchiver();
-        findDuplicates = new FindDuplicates(album, pit, new AlphabeticalPathChooser(), archiver);
+        findDuplicates = new FindDuplicates(album, pit, new AlphabeticalPathChooser(), archiver, true, emptySet());
     }
 
     @Test

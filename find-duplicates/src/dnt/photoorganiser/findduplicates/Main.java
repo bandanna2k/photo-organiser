@@ -3,7 +3,6 @@ package dnt.photoorganiser.findduplicates;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import dnt.photoorganiser.findduplicates.archiver.TarArchiver;
-import dnt.photoorganiser.findduplicates.choosers.AlphabeticalPathChooser;
 import dnt.photoorganiser.findduplicates.choosers.ChooserFactory;
 
 import java.io.BufferedReader;
@@ -11,13 +10,14 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.util.HashSet;
 
 public class Main implements Closeable
 {
     private static final int IO_EXCEPTION = 1000;
 
     private final FindDuplicates findDuplicates;
-    private TarArchiver archiver;
+    private final TarArchiver archiver;
 
     public static void main(String[] args) throws IOException
     {
@@ -50,7 +50,9 @@ public class Main implements Closeable
 
         findDuplicates = new FindDuplicates(config.getPrimaryDirectory(), config.getSecondaryDirectory(),
                 chooserFactory.newInstance(config.chooser),
-                archiver);
+                archiver,
+                config.allFiles,
+                new HashSet<>(config.extensions));
     }
 
     void start()

@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class FindDuplicates
 {
@@ -21,10 +22,12 @@ public class FindDuplicates
     public FindDuplicates(Path primaryDirectory,
                           Path pitDirectory,
                           Chooser chooser,
-                          Archiver archiver)
+                          Archiver archiver,
+                          boolean allFiles,
+                          Set<String> extensions)
     {
-        primaryDirectoryCollector = new FileSizeHashCollector(primaryDirectory);
-        pitDirectoryCollector = new FileSizeHashCollector(pitDirectory);
+        primaryDirectoryCollector = new FileSizeHashCollector(primaryDirectory, allFiles, extensions);
+        pitDirectoryCollector = new FileSizeHashCollector(pitDirectory, allFiles, extensions);
 
         this.chooser = chooser;
         this.archiver = archiver;

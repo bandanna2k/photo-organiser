@@ -3,6 +3,7 @@ package dnt.photoorganiser.findduplicates;
 import com.beust.jcommander.*;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Config
@@ -18,6 +19,12 @@ public class Config
 
     @Parameter(names = {"--max-tarred-files"})
     public int maxFilesInATar = 30;
+
+    @Parameter(names = "--all-files")
+    public boolean allFiles = false;
+
+    @Parameter(names = "--extensions")
+    public List<String> extensions = List.of("jpg", "jpeg", "png");
 
     public enum ChooserType
     {
@@ -48,6 +55,8 @@ public class Config
                 "directories=" + directories +
                 ", chooser=" + chooser +
                 ", maxFilesInATar=" + maxFilesInATar +
+                ", allFiles=" + allFiles +
+                ", extensions=" + extensions +
                 '}';
     }
 
