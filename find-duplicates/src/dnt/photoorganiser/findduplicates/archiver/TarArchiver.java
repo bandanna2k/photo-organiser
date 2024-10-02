@@ -7,6 +7,7 @@ import java.io.Closeable;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class TarArchiver implements Archiver, Closeable
     {
         if(filePaths.isEmpty()) return;
 
-        System.out.printf("INFO: Archiving %d files%n", filePaths.size());
+        System.out.printf("INFO: Archiving %d files. %s%n", filePaths.size(), filePaths);
 
         String filename = String.format("%s.%s.%04d.tar.gz", prefix, dateTimeString, counter++);
         ArchiveCommands.Tar tarCommand = new ArchiveCommands.Tar(workingDirectory, archiveDirectory.resolve(filename));
@@ -61,7 +62,11 @@ public class TarArchiver implements Archiver, Closeable
         Result<Integer, String> result = tarCommand.execute();
         result.fold(
                 success -> {
-                    assert success == 0 : "Error code of " + success;
+                    if(success != 0 )
+                    {
+                        System.err.println("WARNING: Tar command failed. Error code. " + success);
+                        System.err.println("WARNING: " + Arrays.toString(tarCommand.getCommand()));
+                    }
                     filePaths.clear();
                 },
                 failure -> {

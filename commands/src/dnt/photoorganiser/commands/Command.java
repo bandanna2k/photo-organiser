@@ -30,4 +30,18 @@ public abstract class Command
             return failure(e.getMessage());
         }
     }
+
+    protected Result<Integer, String> execute(String[] command, Path workingDirectory)
+    {
+        Process p = null;
+        try
+        {
+            p = Runtime.getRuntime().exec(command, null, workingDirectory.toFile());
+            return success(p.waitFor());
+        }
+        catch (IOException | InterruptedException e)
+        {
+            return failure(e.getMessage());
+        }
+    }
 }

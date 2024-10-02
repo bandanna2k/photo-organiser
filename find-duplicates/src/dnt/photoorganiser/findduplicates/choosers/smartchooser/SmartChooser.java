@@ -84,7 +84,15 @@ public class SmartChooser implements Chooser
         {
             try
             {
-                choice = Integer.parseInt(reader.readLine());
+                String input = reader.readLine();
+                if("r".equalsIgnoreCase(input))
+                {
+                    choice = recommendationIndex;
+                }
+                else
+                {
+                    choice = Integer.parseInt(input);
+                }
             }
             catch (IOException e)
             {

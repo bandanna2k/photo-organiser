@@ -46,7 +46,7 @@ public class Main implements Closeable
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         ChooserFactory chooserFactory = new ChooserFactory(reader);
         archiver = new TarArchiver("archive", Path.of(System.getProperty("user.dir")), config.getArchiveDirectory(), config.maxFilesInATar);
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> archiver.close()));
+//        Runtime.getRuntime().addShutdownHook(new Thread(() -> archiver.close()));   NOT WORKING
 
         findDuplicates = new FindDuplicates(config.getPrimaryDirectory(), config.getSecondaryDirectory(),
                 chooserFactory.newInstance(config.chooser),
@@ -66,6 +66,7 @@ public class Main implements Closeable
             System.err.println("ERROR: " + e.getMessage());
             System.exit(IO_EXCEPTION);
         }
+        archiver.close();
     }
 
     @Override

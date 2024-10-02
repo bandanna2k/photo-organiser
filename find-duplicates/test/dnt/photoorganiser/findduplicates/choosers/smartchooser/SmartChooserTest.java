@@ -29,9 +29,8 @@ public class SmartChooserTest
         temporaryFolder.delete();
     }
 
-    @Test
-    @Ignore // Doesn't work. Needs multi-threaded.
-    public void testLoadSaveXXX() throws IOException
+    @Test(timeout = 1000L)
+    public void testLoadSaveUsingReader() throws IOException
     {
         PipedInputStream pis = new PipedInputStream();
         PipedOutputStream pos = new PipedOutputStream(pis);
@@ -42,9 +41,15 @@ public class SmartChooserTest
             SmartChooser smartChooser = new SmartChooser(reader);
 
             writer.println("1");
+            writer.println("1");
+            writer.flush();
             smartChooser.choose(List.of(
                     Path.of("hello", "partner", "my", "old", "friend"),
                     Path.of("ha", "ha", "ha")
+            ));
+            smartChooser.choose(List.of(
+                    Path.of("hello", "is", "it", "me", "you're", "looking", "for"),
+                    Path.of("he", "he", "he")
             ));
 
             smartChooser.save();

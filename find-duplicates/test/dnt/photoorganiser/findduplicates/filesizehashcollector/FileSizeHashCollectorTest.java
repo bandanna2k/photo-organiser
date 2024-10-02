@@ -9,11 +9,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 public class FileSizeHashCollectorTest extends FileSizeHashCollectorTestBase
 {
@@ -60,5 +60,21 @@ public class FileSizeHashCollectorTest extends FileSizeHashCollectorTestBase
         findDuplicatesAndCollect();
 
         assertThat(collector.sizeHashToFiles.size()).isEqualTo(3);
+    }
+
+    @Test
+    public void shouldSortBySize() throws IOException
+    {
+        for (int i = 0; i < 9; i++) Files.writeString(new File(source.toFile(), "fileA" + i).toPath(), "fileA content");
+        for (int i = 0; i < 8; i++) Files.writeString(new File(source.toFile(), "fileB" + i).toPath(), "fileB content");
+        for (int i = 0; i < 7; i++) Files.writeString(new File(source.toFile(), "fileC" + i).toPath(), "fileC content");
+
+        findDuplicatesAndCollect();
+
+        List<List<Path>> listOfPaths = new ArrayList<>();
+        fileSizeHashCollector.forEachSizeHash(((sizeHash, paths) -> listOfPaths.add(paths)));
+        assertThat(listOfPaths.get(0).size()).isEqualTo(9);
+        assertThat(listOfPaths.get(1).size()).isEqualTo(8);
+        assertThat(listOfPaths.get(2).size()).isEqualTo(7);
     }
 }

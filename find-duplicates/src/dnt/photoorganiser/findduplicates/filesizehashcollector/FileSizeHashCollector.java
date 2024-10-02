@@ -30,18 +30,18 @@ mv /tmp/Pit/tmp/IMG0001_Copy.jpg /tmp/Archive/tmp/
  */
 public class FileSizeHashCollector
 {
-    private static final String SIXTY_SPACES = "                                                            ";
+//    private static final String SIXTY_SPACES = "                                                            ";
 
     private final Path sourceDirectory;
 
     private final Map<SizeHash, List<Path>> sizeHashToFiles = new HashMap<>();
     private final Hasher hasher;
-    private final Set<String> extensions;
+    private final Set<String> extensionsLowerCase = new HashSet<>();
     private final boolean allFiles;
 
     public FileSizeHashCollector(Path sourceDirectory, boolean allFiles, Set<String> extensions)
     {
-        this.extensions = extensions;
+        extensions.forEach(extension -> extensionsLowerCase.add(extension.toLowerCase()));
         this.allFiles = allFiles;
         this.hasher = new MD5Hasher();
         this.sourceDirectory = sourceDirectory;
@@ -58,22 +58,19 @@ public class FileSizeHashCollector
             {
                 if(
                         allFiles ||
-                        extensions.stream().anyMatch(extension -> filePath.toString().endsWith("." + extension)))
+                        extensionsLowerCase.stream().anyMatch(extension -> filePath.toString().toLowerCase().endsWith("." + extension)))
                 {
-                    System.out.printf("Count: %d, File: %s%s\r", fileCounter.getAndIncrement(), filePath, SIXTY_SPACES);
-
-                    try
-                    {
-                        Thread.sleep(1000);
-                    }
-                    catch (InterruptedException e)
-                    {
-                        throw new RuntimeException(e);
-                    }
                     File file = filePath.toFile();
+
+                    long start = System.currentTimeMillis();
                     SizeHash sizeHash = new SizeHash(file.length(), hasher.hash(filePath));
+                    double duration = (System.currentTimeMillis() - start) / 1000.0;
+
                     List<Path> files = sizeHashToFiles.computeIfAbsent(sizeHash, sh -> new ArrayList<>());
                     files.add(filePath);
+
+                    System.out.printf("Count: %d, Hash time: %.1f, File: %s\n",
+                            fileCounter.getAndIncrement(), duration, filePath);
                 }
                 return super.visitFile(filePath, attrs);
             }
@@ -84,6 +81,14 @@ public class FileSizeHashCollector
 
     public void forEachSizeHash(BiConsumer<SizeHash, List<Path>> consumer)
     {
-        sizeHashToFiles.forEach(consumer);
+        sizeHashToFiles.entrySet().stream()
+                .sorted((entry1, entry2) ->
+                {
+                    if(entry1.getValue().size() < entry2.getValue().size()) return 1;
+                    if(entry1.getValue().size() > entry2.getValue().size()) return -1;
+                    return 0;
+                }).forEach(entry -> {
+                    consumer.accept(entry.getKey(), entry.getValue());
+                });
     }
 }

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FindDuplicates
 {
@@ -44,7 +45,10 @@ public class FindDuplicates
             primarySizeHashToFiles.put(sizeHash, paths);
         });
 
+        final AtomicBoolean isExiting = new AtomicBoolean();
         pitDirectoryCollector.forEachSizeHash((sizeHash, files) -> {
+            if(isExiting.get()) return;
+
             List<Path> primaryFiles = primarySizeHashToFiles.get(sizeHash);
             if(null == primaryFiles)
             {
@@ -53,6 +57,11 @@ public class FindDuplicates
                 {
                     // Duplicates found - Choose, archive
                     int choice = chooser.choose(files);
+                    if(choice < 0)
+                    {
+                        isExiting.set(true);
+                        return;
+                    }
 
                     for (int i = 0; i < files.size(); i++)
                     {

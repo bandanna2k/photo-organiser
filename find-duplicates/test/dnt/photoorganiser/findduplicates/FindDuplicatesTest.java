@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static dnt.photoorganiser.testing.DirectoryAssertions.*;
 import static java.util.Collections.emptySet;
@@ -76,14 +77,25 @@ public class FindDuplicatesTest extends TestBase
         );
     }
 
-    /*
+    @Test
+    public void shouldExtensions() throws IOException
+    {
+        Files.writeString(new File(pit.toFile(), "file1").toPath(), "unique");
+        Files.writeString(new File(pit.toFile(), "file2").toPath(), "same");
+        Files.writeString(new File(pit.toFile(), "file3").toPath(), "same");
 
-    Album >
-    Pit >
+        FindDuplicates finder = new FindDuplicates(album, pit, new AlphabeticalPathChooser(), archiver, false, Set.of("txt"));
+        finder.find();
+
+        assertThat(archiver.archivedFiles.size()).isEqualTo(0);
+        assertDirectory(temporaryFolder.getRoot().toPath(),
+                "Pit/file1",
+                "Pit/file2",
+                "Pit/file3"
+        );
+    }
 
 
-
-     */
     private static class TestArchiver implements Archiver
     {
         private final List<Path> archivedFiles = new ArrayList<>();

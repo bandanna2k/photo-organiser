@@ -26,8 +26,7 @@ public abstract class ArchiveCommands extends Command
             this.destinationFilePath = destinationFilePath;
         }
 
-        @Override
-        public Result<Integer, String> execute()
+        public String getCommandOld()
         {
             String files = sourceFiles.stream().map(File::getAbsolutePath).collect(Collectors.joining(" "));
             String directories = sourceDirectories.stream().map(Path::toString).collect(Collectors.joining(" "));
@@ -35,8 +34,26 @@ public abstract class ArchiveCommands extends Command
                     " " + files +
                     " " + directories +
                     " --remove-files";
-//            System.out.println(command);
-            return execute(command, workingDirectory);
+            return command;
+        }
+        public String[] getCommand()
+        {
+            List<String> command = new ArrayList<>();
+            command.addAll(List.of("tar", "czvf", destinationFilePath.toString(), "--remove-files"));
+            sourceFiles.forEach(file -> command.add(file.getAbsolutePath()));
+            sourceDirectories.forEach(path -> command.add(path.toString()));
+            return command.toArray(String[]::new);
+        }
+
+        private static String sm(String string)
+        {
+            return "\"" + string + "\"";
+        }
+
+        @Override
+        public Result<Integer, String> execute()
+        {
+            return execute(getCommand(), workingDirectory);
         }
 
         public Command withSource(Path... directories)
