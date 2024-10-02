@@ -50,13 +50,27 @@ public class FindDuplicatesTest extends TestBase
         Files.writeString(new File(pit.toFile(), "file2").toPath(), "same");
         Files.writeString(new File(pit.toFile(), "file3").toPath(), "same");
 
-        findDuplicates.find();
+        findDuplicates.findAndArchive();
 
         assertThat(archiver.archivedFiles.size()).isEqualTo(1);
         assertThat(archiver.archivedFiles.getFirst().toString()).endsWith("file3");
         assertDirectory(temporaryFolder.getRoot().toPath(),
                 "Pit/file1",
                 "Pit/file2"
+        );
+    }
+
+    @Test
+    public void shouldWarnIfDuplicatesInPrimaryDirectory() throws IOException
+    {
+        Files.writeString(new File(album.toFile(), "file1").toPath(), "same");
+        Files.writeString(new File(album.toFile(), "file2").toPath(), "same");
+
+        findDuplicates.findAndArchive();
+
+        assertDirectory(temporaryFolder.getRoot().toPath(),
+                "Album/file1",
+                "Album/file2"
         );
     }
 
@@ -68,7 +82,7 @@ public class FindDuplicatesTest extends TestBase
         Files.writeString(new File(pit.toFile(), "file3").toPath(), "same2");
         Files.writeString(new File(pit.toFile(), "file4").toPath(), "same2");
 
-        findDuplicates.find();
+        findDuplicates.findAndArchive();
 
         assertThat(archiver.archivedFiles.size()).isEqualTo(2);
         assertDirectory(temporaryFolder.getRoot().toPath(),
@@ -85,7 +99,7 @@ public class FindDuplicatesTest extends TestBase
         Files.writeString(new File(pit.toFile(), "file3").toPath(), "same");
 
         FindDuplicates finder = new FindDuplicates(album, pit, new AlphabeticalPathChooser(), archiver, false, Set.of("txt"));
-        finder.find();
+        finder.findAndArchive();
 
         assertThat(archiver.archivedFiles.size()).isEqualTo(0);
         assertDirectory(temporaryFolder.getRoot().toPath(),

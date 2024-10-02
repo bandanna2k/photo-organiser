@@ -2,6 +2,7 @@
 # PHOTO ORGANISER
 
 1. Duplicates
+   2. Clean-up with `find ? -empty delete`
 2. Organise
 3. File Sizes
 

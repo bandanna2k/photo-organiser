@@ -59,7 +59,7 @@ public class Main implements Closeable
     {
         try
         {
-            findDuplicates.find();
+            findDuplicates.findAndArchive();
         }
         catch (IOException e)
         {

@@ -67,18 +67,13 @@ public class SmartChooser implements Chooser
         System.out.println("------------------");
         for (int i = 0; i < paths.size(); i++)
         {
-            if(i == recommendationIndex)
-            {
-                System.out.printf("(%d)\t%s\tRECOMMENDATION%n", i, paths.get(i));
-            }
-            else
-            {
-                System.out.printf("(%d)\t%s%n", i, paths.get(i));
-            }
+            Path filePath = paths.get(i);
+            System.out.printf("(%d)\t%s\t%s", i, filePath.toFile().getName(), filePath);
+            System.out.println(i == recommendationIndex ? "\tRECOMMENDATION" : "");
         }
 
         System.out.println("------------------");
-        System.out.println("Choose a file.");
+        System.out.printf("Choose a file to keep. 0 to %d, or 'r' for RECOMMENDATION. All others will be archived.%n", paths.size() - 1);
         int choice = -1;
         while(choice < 0 || choice >= paths.size())
         {

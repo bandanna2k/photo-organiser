@@ -34,14 +34,15 @@ public class FindDuplicates
         this.archiver = archiver;
     }
 
-    public void find() throws IOException
+    public void findAndArchive() throws IOException
     {
         primaryDirectoryCollector.walkSource();
         pitDirectoryCollector.walkSource();
 
         Map<SizeHash, List<Path>> primarySizeHashToFiles = new HashMap<>();
         primaryDirectoryCollector.forEachSizeHash((sizeHash, paths) -> {
-            assert paths.size() == 1;
+//            assert paths.size() == 1;
+            if (paths.size() > 1) System.err.println("WARNING: Duplicates in primary directory. " + paths);
             primarySizeHashToFiles.put(sizeHash, paths);
         });
 
