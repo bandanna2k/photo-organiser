@@ -17,6 +17,12 @@ public abstract class Command
         return execute(command, Path.of(System.getProperty("user.dir")));
     }
 
+    protected Result<Integer, String> execute(String[] command)
+    {
+        return execute(command, Path.of(System.getProperty("user.dir")));
+    }
+
+    @Deprecated
     protected Result<Integer, String> execute(String command, Path workingDirectory)
     {
         Process p = null;

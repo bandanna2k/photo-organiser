@@ -19,6 +19,8 @@ public class MoveCommand extends Command
     @Override
     public Result<Integer, String> execute()
     {
-        return execute("mv " + source + " " + destination);
+        return execute(new String[] {
+                "mv", source.toString(), destination.toString()
+        });
     }
 }
