@@ -77,9 +77,10 @@ public class SmartChooser implements Chooser
         int choice = -1;
         while(choice < 0 || choice >= paths.size())
         {
+            String input = null;
             try
             {
-                String input = reader.readLine();
+                input = reader.readLine();
                 if("r".equalsIgnoreCase(input))
                 {
                     choice = recommendationIndex;
@@ -89,12 +90,14 @@ public class SmartChooser implements Chooser
                     choice = Integer.parseInt(input);
                 }
             }
-            catch (IOException e)
+            catch (Exception e)
             {
-                System.err.println("ERROR: Invalid choice.");
+                System.err.println("ERROR: Invalid choice. " + input);
             }
         }
-        selectedPaths.add(paths.get(choice));
+        Path chosenFilePath = paths.get(choice);
+        System.out.printf("You chose %d, %s%n", choice, chosenFilePath);
+        selectedPaths.add(chosenFilePath);
         return choice;
     }
 

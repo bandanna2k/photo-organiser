@@ -81,6 +81,8 @@ public class FileSizeHashCollector
 
     public void forEachSizeHash(BiConsumer<SizeHash, List<Path>> consumer)
     {
+        int size = sizeHashToFiles.size();
+        AtomicInteger counter = new AtomicInteger(1);
         sizeHashToFiles.entrySet().stream()
                 .sorted((entry1, entry2) ->
                 {
@@ -89,6 +91,7 @@ public class FileSizeHashCollector
                     return 0;
                 }).forEach(entry -> {
                     consumer.accept(entry.getKey(), entry.getValue());
+                    System.out.printf("INFO: Progress, %d of %d complete.", counter.getAndIncrement(), size);
                 });
     }
 }
