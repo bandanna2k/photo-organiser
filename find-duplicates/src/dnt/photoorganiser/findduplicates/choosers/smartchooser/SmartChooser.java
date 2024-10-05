@@ -7,7 +7,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static dnt.photoorganiser.findduplicates.choosers.smartchooser.Score.score;
@@ -18,7 +21,6 @@ public class SmartChooser implements Chooser
     private final ObjectMapper objectMapper;
 
     Set<Path> selectedPaths = new TreeSet<>();
-
 
     public SmartChooser(BufferedReader reader)
     {

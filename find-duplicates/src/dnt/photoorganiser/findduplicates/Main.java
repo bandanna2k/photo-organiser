@@ -2,7 +2,9 @@ package dnt.photoorganiser.findduplicates;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import dnt.photoorganiser.findduplicates.archiver.Archiver;
 import dnt.photoorganiser.findduplicates.archiver.TarArchiver;
+import dnt.photoorganiser.findduplicates.archiver.ThreadedArchiver;
 import dnt.photoorganiser.findduplicates.choosers.ChooserFactory;
 
 import java.io.BufferedReader;
@@ -17,7 +19,7 @@ public class Main implements Closeable
     private static final int IO_EXCEPTION = 1000;
 
     private final FindDuplicates findDuplicates;
-    private final TarArchiver archiver;
+    private final Archiver archiver;
 
     public static void main(String[] args) throws IOException
     {
@@ -45,7 +47,8 @@ public class Main implements Closeable
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         ChooserFactory chooserFactory = new ChooserFactory(reader);
-        archiver = new TarArchiver("archive", Path.of(System.getProperty("user.dir")), config.getArchiveDirectory(), config.maxFilesInATar);
+        archiver = new ThreadedArchiver(
+                new TarArchiver("archive", Path.of(System.getProperty("user.dir")), config.getArchiveDirectory(), config.maxFilesInATar));
 //        Runtime.getRuntime().addShutdownHook(new Thread(() -> archiver.close()));   NOT WORKING
 
         findDuplicates = new FindDuplicates(config.getPrimaryDirectory(), config.getSecondaryDirectory(),
@@ -60,13 +63,13 @@ public class Main implements Closeable
         try
         {
             findDuplicates.findAndArchive();
+            archiver.close();
         }
         catch (IOException e)
         {
             System.err.println("ERROR: " + e.getMessage());
             System.exit(IO_EXCEPTION);
         }
-        archiver.close();
     }
 
     @Override

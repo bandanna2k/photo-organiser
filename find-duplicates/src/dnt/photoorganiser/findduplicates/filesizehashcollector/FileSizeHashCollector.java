@@ -30,8 +30,6 @@ mv /tmp/Pit/tmp/IMG0001_Copy.jpg /tmp/Archive/tmp/
  */
 public class FileSizeHashCollector
 {
-//    private static final String SIXTY_SPACES = "                                                            ";
-
     private final Path sourceDirectory;
 
     private final Map<SizeHash, List<Path>> sizeHashToFiles = new HashMap<>();
@@ -47,9 +45,9 @@ public class FileSizeHashCollector
         this.sourceDirectory = sourceDirectory;
     }
 
-    public void walkSource() throws IOException
+    public int walkSource() throws IOException
     {
-        AtomicInteger fileCounter = new AtomicInteger(1);
+        AtomicInteger fileCounter = new AtomicInteger(0);
         System.out.println("INFO: Walking directory: " + sourceDirectory);
         Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<>()
         {
@@ -70,18 +68,18 @@ public class FileSizeHashCollector
                     files.add(filePath);
 
                     System.out.printf("Count: %d, Hash time: %.1f, File: %s\n",
-                            fileCounter.getAndIncrement(), duration, filePath);
+                            fileCounter.incrementAndGet(), duration, filePath);
                 }
                 return super.visitFile(filePath, attrs);
             }
         });
         System.out.println();
         System.out.println("INFO: Finished: " + sourceDirectory);
+        return fileCounter.get();
     }
 
     public void forEachSizeHash(BiConsumer<SizeHash, List<Path>> consumer)
     {
-        int size = sizeHashToFiles.size();
         AtomicInteger counter = new AtomicInteger(1);
         sizeHashToFiles.entrySet().stream()
                 .sorted((entry1, entry2) ->
@@ -91,7 +89,6 @@ public class FileSizeHashCollector
                     return 0;
                 }).forEach(entry -> {
                     consumer.accept(entry.getKey(), entry.getValue());
-                    System.out.printf("INFO: Progress, %d of %d complete.", counter.getAndIncrement(), size);
                 });
     }
 }

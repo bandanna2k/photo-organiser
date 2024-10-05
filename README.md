@@ -1,3 +1,7 @@
+# TODO
+
+Cache hashes of album
+Option to re-cache album caches
 
 # PHOTO ORGANISER
 

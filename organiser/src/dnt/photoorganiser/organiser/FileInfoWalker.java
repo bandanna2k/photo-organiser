@@ -36,7 +36,7 @@ public class FileInfoWalker
                 {
                     if (file.isFile())
                     {
-                        System.out.println("INFO: File " + file);
+//                        System.out.println("INFO: File " + file);
 
                         Date creationTime = getCreationTimeAsDate(file);
 
@@ -45,9 +45,11 @@ public class FileInfoWalker
                         destinationFilePath = rootDirectory.relativize(destinationFilePath);
                         System.out.println("mkdir -p " + destinationFilePath);
                         System.out.printf("mv %s %s%n", sourceFilePath, destinationFilePath);
+                        System.out.println();
+
                     }
                 }
-                System.out.println("INFO: Dir  " + dir);
+//                System.out.println("INFO: Dir  " + dir);
                 return super.postVisitDirectory(dir, exc);
             }
         });

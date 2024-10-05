@@ -109,7 +109,6 @@ public class FindDuplicatesTest extends TestBase
         );
     }
 
-
     private static class TestArchiver implements Archiver
     {
         private final List<Path> archivedFiles = new ArrayList<>();
@@ -119,6 +118,11 @@ public class FindDuplicatesTest extends TestBase
         {
             this.archivedFiles.add(filePath);
             assert filePath.toFile().delete() : "Failed to delete " + filePath;
+        }
+
+        @Override
+        public void close()
+        {
         }
     }
 }
