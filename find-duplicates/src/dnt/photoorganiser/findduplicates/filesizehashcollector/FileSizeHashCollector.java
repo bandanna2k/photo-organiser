@@ -1,5 +1,6 @@
 package dnt.photoorganiser.findduplicates.filesizehashcollector;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dnt.photoorganiser.findduplicates.hashing.Hasher;
 import dnt.photoorganiser.findduplicates.hashing.MD5Hasher;
 
@@ -13,6 +14,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 /*
 ## Duplicates
@@ -44,6 +46,33 @@ public class FileSizeHashCollector
         this.hasher = new MD5Hasher();
         this.sourceDirectory = sourceDirectory;
     }
+
+//    public void load(File file)
+//    {
+//        if(!file.exists()) return;
+//        try
+//        {
+//            try
+//            {
+//                final ObjectMapper objectMapper = new ObjectMapper();
+//                sizeHashToFiles.forEach((sizeHash, paths) -> {
+//                    objectMapper.writeValue(file, pathStrings);
+//                });
+//            }
+//            catch (IOException e)
+//            {
+//                throw new RuntimeException(e);
+//            }
+//            final ObjectMapper objectMapper = new ObjectMapper();
+//            selectedPaths = new TreeSet<>(Arrays.stream(paths).toList());
+//            System.out.println("INFO: Selected paths loaded.");
+//        }
+//        catch (Exception e)
+//        {
+//            System.err.println("ERROR: Failed to load. " + e.getMessage());
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     public int walkSource() throws IOException
     {
@@ -80,7 +109,6 @@ public class FileSizeHashCollector
 
     public void forEachSizeHash(BiConsumer<SizeHash, List<Path>> consumer)
     {
-        AtomicInteger counter = new AtomicInteger(1);
         sizeHashToFiles.entrySet().stream()
                 .sorted((entry1, entry2) ->
                 {

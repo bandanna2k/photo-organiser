@@ -28,7 +28,6 @@ public class FindDuplicatesTest extends TestBase
     private Path pit;
     private Path album;
     private Path archive;
-    private FileSizeHashCollector fileSizeHashCollector;
     private FindDuplicates findDuplicates;
     private TestArchiver archiver;
 
