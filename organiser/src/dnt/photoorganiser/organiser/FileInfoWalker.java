@@ -36,7 +36,7 @@ public class FileInfoWalker
                 {
                     if (file.isFile())
                     {
-//                        System.out.println("INFO: File " + file);
+                        System.out.println("# INFO: File " + file);
 
                         Date creationTime = getCreationTimeAsDate(file);
 
@@ -49,7 +49,7 @@ public class FileInfoWalker
 
                     }
                 }
-//                System.out.println("INFO: Dir  " + dir);
+                System.out.println("# INFO: Dir  " + dir);
                 return super.postVisitDirectory(dir, exc);
             }
         });

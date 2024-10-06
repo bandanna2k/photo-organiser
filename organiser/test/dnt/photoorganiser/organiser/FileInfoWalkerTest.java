@@ -7,12 +7,6 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-
-import static org.junit.Assert.*;
 
 public class FileInfoWalkerTest extends FileTestBase
 {
