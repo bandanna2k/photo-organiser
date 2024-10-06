@@ -5,15 +5,13 @@ import dnt.common.Result;
 import java.nio.file.Path;
 import java.util.Arrays;
 
-public class MoveCommand extends Command
+public class MakeDirectoryCommand extends Command
 {
-    private final Path source;
-    private final Path destination;
+    private final Path path;
 
-    public MoveCommand(Path source, Path destination)
+    public MakeDirectoryCommand(Path path)
     {
-        this.source = source;
-        this.destination = destination;
+        this.path = path;
     }
 
     @Override
@@ -25,7 +23,7 @@ public class MoveCommand extends Command
     private String[] getCommand()
     {
         return new String[]{
-                "mv", source.toString(), destination.toString()
+                "mkdir", "-p", path.toString()
         };
     }
 

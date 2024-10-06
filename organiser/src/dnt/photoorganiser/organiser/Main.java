@@ -12,6 +12,7 @@ public class Main
     {
         new Main(args).start();
     }
+
     static Config getConfig(String[] args)
     {
         Config config = new Config();
@@ -19,9 +20,11 @@ public class Main
         return config;
     }
 
+    private final Config config;
+
     private void start()
     {
-        new FileInfoWalker(Path.of("."));
+        new FileInfoWalker(config);
     }
 
     public Main(String[] args)
@@ -31,6 +34,6 @@ public class Main
 
     public Main(Config config)
     {
-        System.out.println(config);
+        this.config = config;
     }
 }

@@ -18,6 +18,11 @@ public class FileTestBase
 
     protected static final byte[] CONTENT = "CONTENT".getBytes();
     protected static final byte[] EIGHT_BYTES = new byte[]{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
+
+    protected static final LocalDateTime JANUARY = LocalDateTime.of(2023, 1, 17, 12, 55, 00);
+    protected static final LocalDateTime FEBRUARY = LocalDateTime.of(2023, 2, 17, 12, 55, 00);
+    protected static final LocalDateTime MARCH = LocalDateTime.of(2023, 3, 17, 12, 55, 00);
+
     protected static final LocalDateTime MORNING = LocalDateTime.of(2023, 10, 17, 8, 55, 00);
     protected static final LocalDateTime NOON = LocalDateTime.of(2023, 10, 17, 12, 56, 00);
     protected static final LocalDateTime NIGHT = LocalDateTime.of(2023, 10, 17, 20, 57, 00);

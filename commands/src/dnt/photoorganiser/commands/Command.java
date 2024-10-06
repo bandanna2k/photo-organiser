@@ -4,6 +4,7 @@ import dnt.common.Result;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 import static dnt.common.Result.failure;
 import static dnt.common.Result.success;
@@ -12,6 +13,7 @@ public abstract class Command
 {
     abstract Result<Integer, String> execute();
 
+    @Deprecated
     protected Result<Integer, String> execute(String command)
     {
         return execute(command, Path.of(System.getProperty("user.dir")));
@@ -19,7 +21,11 @@ public abstract class Command
 
     protected Result<Integer, String> execute(String[] command)
     {
-        return execute(command, Path.of(System.getProperty("user.dir")));
+        Result<Integer, String> result = execute(command, Path.of(System.getProperty("user.dir")));
+        return result.fold(returnCode -> {
+            if(returnCode == 0) return success(returnCode);
+            return failure("Non zero return code. " + Arrays.toString(command));
+        }, Result::failure);
     }
 
     @Deprecated

@@ -60,7 +60,7 @@ public class TarArchiver implements Archiver, Closeable
         ArchiveCommands.Tar tarCommand = new ArchiveCommands.Tar(workingDirectory, archiveDirectory.resolve(filename));
         filePaths.forEach(tarCommand::withSource);
         Result<Integer, String> result = tarCommand.execute();
-        result.fold(
+        result.consume(
                 success -> {
                     if(success != 0 )
                     {

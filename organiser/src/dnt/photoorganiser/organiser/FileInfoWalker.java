@@ -1,36 +1,31 @@
 package dnt.photoorganiser.organiser;
 
+import dnt.photoorganiser.commands.MakeDirectoryCommand;
+import dnt.photoorganiser.commands.MoveCommand;
+
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Date;
 
-import static dnt.photoorganiser.organiser.FileTimeOperations.getCreationTime;
-import static dnt.photoorganiser.organiser.FileTimeOperations.getCreationTimeAsDate;
+import static dnt.photoorganiser.organiser.FileTimeOperations.*;
 
 public class FileInfoWalker
 {
-    private static SimpleDateFormat YEAR =  new SimpleDateFormat("YYYY");
-    private static SimpleDateFormat MONTH = new SimpleDateFormat("MMMM");
+    private static final SimpleDateFormat YEAR =  new SimpleDateFormat("yyyy");
+    private static final SimpleDateFormat MONTH = new SimpleDateFormat("MMMM");
 
     private final Path rootDirectory;
-    private final PrintStream writer;
+    private final Config config;
 
-    public FileInfoWalker(Path rootDirectory)
+    public FileInfoWalker(Config config)
     {
-        this(rootDirectory, System.out);
-    }
-    public FileInfoWalker(Path rootDirectory, PrintStream writer)
-    {
-        this.rootDirectory = rootDirectory;
-        this.writer = writer;
+        this.config = config;
+        this.rootDirectory = Path.of(System.getProperty("user.dir"));
     }
 
     public void walkDirectory() throws IOException
@@ -44,27 +39,51 @@ public class FileInfoWalker
                 {
                     if (file.isFile())
                     {
-                        writer.println("# INFO: File " + file);
+//                        System.out.println("INFO: File " + file);
 
-                        Date creationTime = getCreationTimeAsDate(file);
+                        Date dateTime = getDateTime(file);
 
                         Path sourceFilePath = rootDirectory.relativize(file.toPath());
-                        Path destinationFilePath = rootDirectory.resolve(YEAR.format(creationTime)).resolve(MONTH.format(creationTime));
+                        Path destinationFilePath = rootDirectory.resolve(YEAR.format(dateTime)).resolve(MONTH.format(dateTime));
                         destinationFilePath = rootDirectory.relativize(destinationFilePath);
-                        writer.println("mkdir -p " + destinationFilePath);
-                        writer.printf("mv %s %s%n", wrap(sourceFilePath), wrap(destinationFilePath));
-                        writer.println();
+
+                        MakeDirectoryCommand makeDirectoryCommand = new MakeDirectoryCommand(destinationFilePath);
+                        MoveCommand moveCommand = new MoveCommand(sourceFilePath, destinationFilePath);
+
+                        if(config.isPreviewMode())
+                        {
+                            System.out.println("Preview: " + makeDirectoryCommand);
+                            System.out.println("Preview: " + moveCommand);
+                            continue;
+                        }
+
+                        makeDirectoryCommand.execute().consume(
+                                returnCodeMkdir ->
+                                {
+                                    moveCommand.execute()
+                                            .consume(returnCodeMove ->
+                                                    {
+                                                        System.out.println("Successfully moved file. " + moveCommand);
+                                                    },
+                                                    error ->
+                                                            System.err.printf("ERROR: Failed to move file. %s. %s%n", error, moveCommand));
+                                }
+                                , error ->
+                                        System.err.printf("ERROR: Failed to make directory file. %s. %s%n", error, makeDirectoryCommand));
                     }
                 }
-                writer.println("# INFO: Dir  " + dir);
-                writer.flush();
+//                System.out.println("INFO: Dir  " + dir);
                 return super.postVisitDirectory(dir, exc);
             }
         });
     }
 
-    private String wrap(Path destinationFilePath)
+    private Date getDateTime(File file) throws IOException
     {
-        return "\"" + destinationFilePath + "\"";
+        return switch (config.fileDateTimeMode) {
+            case Creation -> getCreationTimeAsDate(file);
+            case Modified -> getModifiedTimeAsDate(file);
+            case LastAccessed -> getLastAccessedTimeAsDate(file);
+        };
     }
 }

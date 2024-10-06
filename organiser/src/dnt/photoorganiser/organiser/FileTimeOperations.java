@@ -35,6 +35,13 @@ public class FileTimeOperations
         return fileTime.toInstant().atZone(ZONE_OFFSET).toLocalDateTime();
     }
 
+    public static Date getLastAccessedTimeAsDate(File file) throws IOException
+    {
+        BasicFileAttributeView attributes = Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class);
+        FileTime fileTime = attributes.readAttributes().lastAccessTime();
+        return new Date(fileTime.toInstant().toEpochMilli());
+    }
+
     public static LocalDateTime getModifiedTime(File file) throws IOException
     {
         BasicFileAttributeView attributes = Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class);
@@ -42,4 +49,11 @@ public class FileTimeOperations
         return fileTime.toInstant().atZone(ZONE_OFFSET).toLocalDateTime();
     }
 
+
+    public static Date getModifiedTimeAsDate(File file) throws IOException
+    {
+        BasicFileAttributeView attributes = Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class);
+        FileTime fileTime = attributes.readAttributes().lastModifiedTime();
+        return new Date(fileTime.toInstant().toEpochMilli());
+    }
 }

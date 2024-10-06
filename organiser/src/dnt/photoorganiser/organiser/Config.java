@@ -7,6 +7,13 @@ import java.util.List;
 
 public class Config
 {
+    public enum FileDateTimeMode
+    {
+        Creation,
+        Modified,
+        LastAccessed,
+    }
+
     @Parameter(names = "--confirm-files-unique")
     public boolean confirmFilesAreUnique = true;
 
@@ -15,4 +22,15 @@ public class Config
 
     @Parameter(names = {"-a", "--after", "--postfix"})
     public List<String> postfixes = new ArrayList<>();
+
+    @Parameter(names = {"-e", "--execute"})
+    public boolean execute = false;
+
+    @Parameter(names = {"--mode"})
+    public FileDateTimeMode fileDateTimeMode = FileDateTimeMode.Modified;
+
+    public boolean isPreviewMode()
+    {
+        return !execute;
+    }
 }
