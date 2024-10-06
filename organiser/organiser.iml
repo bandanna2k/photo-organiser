@@ -11,5 +11,6 @@
     <orderEntry type="library" name="jcommander" level="project" />
     <orderEntry type="library" scope="TEST" name="assertj.core" level="project" />
     <orderEntry type="library" scope="TEST" name="junit" level="project" />
+    <orderEntry type="module" module-name="commands" scope="TEST" />
   </component>
 </module>

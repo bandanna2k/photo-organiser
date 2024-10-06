@@ -1,6 +1,10 @@
+package dnt.photoorganiser.organiser;
+
 import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 public class Main
 {
@@ -8,7 +12,6 @@ public class Main
     {
         new Main(args).start();
     }
-
     static Config getConfig(String[] args)
     {
         Config config = new Config();
@@ -18,7 +21,7 @@ public class Main
 
     private void start()
     {
-
+        new FileInfoWalker(Path.of("."));
     }
 
     public Main(String[] args)

@@ -47,32 +47,35 @@ public class FileSizeHashCollector
         this.sourceDirectory = sourceDirectory;
     }
 
-//    public void load(File file)
+    void load(File file)
+    {
+        if(!file.exists()) return;
+        try
+        {
+            try
+            {
+                final ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.writeValue(file, sizeHashToFiles);
+            }
+            catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+        catch (Exception e)
+        {
+            System.err.println("ERROR: Failed to load. " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+//    void save(File file)
 //    {
-//        if(!file.exists()) return;
-//        try
-//        {
-//            try
-//            {
-//                final ObjectMapper objectMapper = new ObjectMapper();
-//                sizeHashToFiles.forEach((sizeHash, paths) -> {
-//                    objectMapper.writeValue(file, pathStrings);
-//                });
-//            }
-//            catch (IOException e)
-//            {
-//                throw new RuntimeException(e);
-//            }
-//            final ObjectMapper objectMapper = new ObjectMapper();
-//            selectedPaths = new TreeSet<>(Arrays.stream(paths).toList());
-//            System.out.println("INFO: Selected paths loaded.");
-//        }
-//        catch (Exception e)
-//        {
-//            System.err.println("ERROR: Failed to load. " + e.getMessage());
-//            throw new RuntimeException(e);
-//        }
+//        final ObjectMapper objectMapper = new ObjectMapper();
+//        objectMapper.readValue(file, );
+//        System.out.println("INFO: Loaded.");
 //    }
+
 
     public int walkSource() throws IOException
     {
