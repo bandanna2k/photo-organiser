@@ -46,7 +46,8 @@ public class MainTest
                 root + "/Pit",
                 root + "/Archive",
                 "--chooser", "AutoChooser",
-                "--all-files"
+                "--all-files",
+                "--load-hash-cache", "false"
         };
         try (Main app = new Main(args))
         {

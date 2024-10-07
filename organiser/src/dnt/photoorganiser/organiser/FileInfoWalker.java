@@ -30,6 +30,8 @@ public class FileInfoWalker
 
     public void walkDirectory() throws IOException
     {
+//        System.out.println("INFO: Root dir " + rootDirectory);
+
         Files.walkFileTree(rootDirectory, new SimpleFileVisitor<>()
         {
             @Override
@@ -52,8 +54,7 @@ public class FileInfoWalker
 
                         if(config.isPreviewMode())
                         {
-                            System.out.println("Preview: " + makeDirectoryCommand);
-                            System.out.println("Preview: " + moveCommand);
+                            System.out.printf("Preview: %s %s%n", makeDirectoryCommand, moveCommand);
                             continue;
                         }
 

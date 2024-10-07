@@ -5,6 +5,7 @@ import dnt.photoorganiser.findduplicates.choosers.Chooser;
 import dnt.photoorganiser.findduplicates.filesizehashcollector.FileSizeHashCollector;
 import dnt.photoorganiser.findduplicates.filesizehashcollector.SizeHash;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -19,14 +20,17 @@ public class FindDuplicates
     private final FileSizeHashCollector primaryDirectoryCollector;
     private final FileSizeHashCollector pitDirectoryCollector;
     private final Archiver archiver;
+    private final boolean shouldLoadHashCache;
 
     public FindDuplicates(Path primaryDirectory,
                           Path pitDirectory,
                           Chooser chooser,
                           Archiver archiver,
+                          boolean shouldLoadHashCache,
                           boolean allFiles,
                           Set<String> extensions)
     {
+        this.shouldLoadHashCache = shouldLoadHashCache;
         primaryDirectoryCollector = new FileSizeHashCollector(primaryDirectory, allFiles, extensions);
         pitDirectoryCollector = new FileSizeHashCollector(pitDirectory, allFiles, extensions);
 
@@ -36,8 +40,16 @@ public class FindDuplicates
 
     public void findAndArchive() throws IOException
     {
-        primaryDirectoryCollector.walkSource();
-        int pitFileCount = pitDirectoryCollector.walkSource();
+        boolean walk = true;
+        if(shouldLoadHashCache)
+        {
+             walk = !primaryDirectoryCollector.load(new File("primary_hashes.json"));
+        }
+        if(walk)
+        {
+            primaryDirectoryCollector.walkSource();
+            primaryDirectoryCollector.save(new File("primary_hashes.json"));
+        }
 
         Map<SizeHash, List<Path>> primarySizeHashToFiles = new HashMap<>();
         primaryDirectoryCollector.forEachSizeHash((sizeHash, paths) -> {
@@ -47,6 +59,7 @@ public class FindDuplicates
         });
 
         // Loop through non-interactive archiving first
+        int pitFileCount = pitDirectoryCollector.walkSource();
         pitDirectoryCollector.forEachSizeHash((sizeHash, files) -> {
             List<Path> primaryFiles = primarySizeHashToFiles.get(sizeHash);
             if(null != primaryFiles)

@@ -54,6 +54,7 @@ public class Main implements Closeable
         findDuplicates = new FindDuplicates(config.getPrimaryDirectory(), config.getSecondaryDirectory(),
                 chooserFactory.newInstance(config.chooser),
                 archiver,
+                config.shouldLoadHashCache(),
                 config.allFiles,
                 new HashSet<>(config.extensions));
     }

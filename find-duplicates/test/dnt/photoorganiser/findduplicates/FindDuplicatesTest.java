@@ -39,7 +39,7 @@ public class FindDuplicatesTest extends TestBase
         archive = temporaryFolder.newFolder("Archive").toPath();
 
         archiver = new TestArchiver();
-        findDuplicates = new FindDuplicates(album, pit, new AlphabeticalPathChooser(), archiver, true, emptySet());
+        findDuplicates = new FindDuplicates(album, pit, new AlphabeticalPathChooser(), archiver, false, true, emptySet());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class FindDuplicatesTest extends TestBase
     }
 
     @Test
-    public void shouldNotMovePrimaryDuplicateAndTarAllOtherFiles() throws IOException
+    public void ifPrimaryFileHasDuplicateInPitAutoArchivePitDuplicates() throws IOException
     {
         Files.writeString(new File(album.toFile(), "file1").toPath(), "same1");
         Files.writeString(new File(pit.toFile(), "file2").toPath(), "same1");
@@ -97,7 +97,7 @@ public class FindDuplicatesTest extends TestBase
         Files.writeString(new File(pit.toFile(), "file2").toPath(), "same");
         Files.writeString(new File(pit.toFile(), "file3").toPath(), "same");
 
-        FindDuplicates finder = new FindDuplicates(album, pit, new AlphabeticalPathChooser(), archiver, false, Set.of("txt"));
+        FindDuplicates finder = new FindDuplicates(album, pit, new AlphabeticalPathChooser(), archiver, false, false, Set.of("txt"));
         finder.findAndArchive();
 
         assertThat(archiver.archivedFiles.size()).isEqualTo(0);

@@ -14,7 +14,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 /*
 ## Duplicates
@@ -46,36 +45,6 @@ public class FileSizeHashCollector
         this.hasher = new MD5Hasher();
         this.sourceDirectory = sourceDirectory;
     }
-
-    void load(File file)
-    {
-        if(!file.exists()) return;
-        try
-        {
-            try
-            {
-                final ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.writeValue(file, sizeHashToFiles);
-            }
-            catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
-        catch (Exception e)
-        {
-            System.err.println("ERROR: Failed to load. " + e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
-//    void save(File file)
-//    {
-//        final ObjectMapper objectMapper = new ObjectMapper();
-//        objectMapper.readValue(file, );
-//        System.out.println("INFO: Loaded.");
-//    }
-
 
     public int walkSource() throws IOException
     {
@@ -121,5 +90,57 @@ public class FileSizeHashCollector
                 }).forEach(entry -> {
                     consumer.accept(entry.getKey(), entry.getValue());
                 });
+    }
+
+    private record LoadSaveRecord(Path path, long size, String hash) {}
+
+    public boolean load(File file)
+    {
+        if(!file.exists()) return false;
+        try
+        {
+            try
+            {
+                final ObjectMapper objectMapper = new ObjectMapper();
+                LoadSaveRecord[] records = objectMapper.readValue(file, LoadSaveRecord[].class);
+                this.sizeHashToFiles.clear();
+                for (LoadSaveRecord record : records)
+                {
+                    List<Path> pathList = sizeHashToFiles.computeIfAbsent(new SizeHash(record.size, record.hash), sizeHash -> new ArrayList<>());
+                    pathList.add(record.path);
+                }
+                System.out.println("INFO: Hash cache loaded. Paths: " + records.length);
+                return true;
+            }
+            catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+        catch (Exception e)
+        {
+            System.err.println("ERROR: Failed to load. " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void save(File file)
+    {
+        try
+        {
+            final ObjectMapper objectMapper = new ObjectMapper();
+            List<LoadSaveRecord> objects = new ArrayList<>();
+            sizeHashToFiles.forEach((sizeHash, paths) -> {
+                paths.forEach(path -> {
+                    objects.add(new LoadSaveRecord(path, sizeHash.size(), sizeHash.hash()));
+                });
+            });
+            objectMapper.writeValue(file, objects);
+            System.out.println("INFO: Hash cache saved. Paths: " + objects.size());
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 }

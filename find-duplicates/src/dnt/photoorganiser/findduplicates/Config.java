@@ -26,6 +26,9 @@ public class Config
     @Parameter(names = "--extensions")
     public List<String> extensions = List.of("jpg", "jpeg", "png");
 
+    @Parameter(names = "--load-hash-cache", converter = BooleanConverter.class)
+    public String shouldLoadHashCache = "true";
+
     public enum ChooserType
     {
         AutoChooser,
@@ -48,6 +51,11 @@ public class Config
         return directories.getFirst();
     }
 
+    public boolean shouldLoadHashCache()
+    {
+        return Boolean.parseBoolean(shouldLoadHashCache);
+    }
+
     @Override
     public String toString()
     {
@@ -57,6 +65,7 @@ public class Config
                 ", maxFilesInATar=" + maxFilesInATar +
                 ", allFiles=" + allFiles +
                 ", extensions=" + extensions +
+                ", shouldLoadHashCache='" + shouldLoadHashCache + '\'' +
                 '}';
     }
 
@@ -70,6 +79,15 @@ public class Config
             {
                 throw new ParameterException("Path not found: " + value);
             }
+        }
+    }
+
+    private static class BooleanConverter implements IStringConverter<String>
+    {
+        @Override
+        public String convert(String value)
+        {
+            return String.valueOf(Boolean.parseBoolean(value));
         }
     }
 }
