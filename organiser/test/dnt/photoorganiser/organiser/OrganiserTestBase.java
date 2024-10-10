@@ -1,5 +1,7 @@
 package dnt.photoorganiser.organiser;
 
+import java.util.ArrayList;
+
 public class OrganiserTestBase extends FileTestBase
 {
     protected static Config getConfig()

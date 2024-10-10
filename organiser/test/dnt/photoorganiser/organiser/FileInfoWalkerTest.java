@@ -8,6 +8,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 import static dnt.photoorganiser.testing.DirectoryAssertions.assertDirectory;
 
@@ -47,5 +48,29 @@ public class FileInfoWalkerTest extends OrganiserTestBase
 
         assertDirectory(temporaryFolder.getRoot().toPath(),
                 "2024/October/file with spaces");
+    }
+
+    @Test
+    public void shouldOnlyMoveRequestedExtensionsCaseSensitive() throws IOException
+    {
+        Config config = getConfig();
+        config.extensions = List.of("one", "TWO", "five");
+        FileInfoWalker newWalker = new FileInfoWalker(config);
+
+        writeFile(new File(temporaryFolder.getRoot() + "/main1/sub1/file.one"), CONTENT, MORNING, NOON, NIGHT);
+        writeFile(new File(temporaryFolder.getRoot() + "/main1/sub1/file.two"), CONTENT, MORNING, NOON, NIGHT);
+        writeFile(new File(temporaryFolder.getRoot() + "/main1/sub1/file.three"), CONTENT, MORNING, NOON, NIGHT);
+        writeFile(new File(temporaryFolder.getRoot() + "/main1/sub1/file.four"), CONTENT, MORNING, NOON, NIGHT);
+        writeFile(new File(temporaryFolder.getRoot() + "/main1/sub1/file.FIVE"), CONTENT, MORNING, NOON, NIGHT);
+
+        newWalker.walkDirectory();
+
+        assertDirectory(temporaryFolder.getRoot().toPath(),
+                "2024/October/file.one",
+                "main1/sub1/file.two",
+                "main1/sub1/file.three",
+                "main1/sub1/file.four",
+                "main1/sub1/file.FIVE"
+        );
     }
 }

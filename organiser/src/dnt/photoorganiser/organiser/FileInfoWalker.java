@@ -11,6 +11,9 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static dnt.photoorganiser.organiser.FileTimeOperations.*;
 
@@ -21,11 +24,13 @@ public class FileInfoWalker
 
     private final Path rootDirectory;
     private final Config config;
+    private final Set<String> extensions;
 
     public FileInfoWalker(Config config)
     {
         this.config = config;
         this.rootDirectory = Path.of(System.getProperty("user.dir"));
+        this.extensions = new HashSet<>(config.extensions);
     }
 
     public void walkDirectory() throws IOException
@@ -39,41 +44,48 @@ public class FileInfoWalker
             {
                 for (File file : dir.toFile().listFiles())
                 {
-                    if (file.isFile())
+                    if(!file.isFile())
                     {
-//                        System.out.println("INFO: File " + file);
-
-                        Date dateTime = getDateTime(file);
-
-                        Path sourceFilePath = rootDirectory.relativize(file.toPath());
-                        Path destinationFilePath = rootDirectory.resolve(YEAR.format(dateTime)).resolve(MONTH.format(dateTime));
-                        destinationFilePath = rootDirectory.relativize(destinationFilePath);
-
-                        MakeDirectoryCommand makeDirectoryCommand = new MakeDirectoryCommand(destinationFilePath);
-                        MoveCommand moveCommand = new MoveCommand(sourceFilePath, destinationFilePath);
-
-                        if(config.isPreviewMode())
-                        {
-                            System.out.printf("Preview: %s %s%n", makeDirectoryCommand, moveCommand);
-                            continue;
-                        }
-
-                        makeDirectoryCommand.execute().consume(
-                                returnCodeMkdir ->
-                                {
-                                    moveCommand.execute()
-                                            .consume(returnCodeMove ->
-                                                    {
-                                                        System.out.println("Successfully moved file. " + moveCommand);
-                                                    },
-                                                    error ->
-                                                            System.err.printf("ERROR: Failed to move file. %s. %s%n", error, moveCommand));
-                                }
-                                , error ->
-                                        System.err.printf("ERROR: Failed to make directory file. %s. %s%n", error, makeDirectoryCommand));
+                        continue;
                     }
-                }
-//                System.out.println("INFO: Dir  " + dir);
+                    if(!extensions.isEmpty() &&
+                            extensions.stream().noneMatch(x -> file.getName().endsWith("." + x)))
+                    {
+                        continue;
+                    }
+
+//                    System.out.println("INFO: File " + file);
+
+                    Date dateTime = getDateTime(file);
+
+                    Path sourceFilePath = rootDirectory.relativize(file.toPath());
+                    Path destinationFilePath = rootDirectory.resolve(YEAR.format(dateTime)).resolve(MONTH.format(dateTime));
+                    destinationFilePath = rootDirectory.relativize(destinationFilePath);
+
+                    MakeDirectoryCommand makeDirectoryCommand = new MakeDirectoryCommand(destinationFilePath);
+                    MoveCommand moveCommand = new MoveCommand(sourceFilePath, destinationFilePath);
+
+                    if(config.isPreviewMode())
+                    {
+                        System.out.printf("Preview: %s %s%n", makeDirectoryCommand, moveCommand);
+                        continue;
+                    }
+
+                    makeDirectoryCommand.execute().consume(
+                            returnCodeMkdir ->
+                            {
+                                moveCommand.execute()
+                                        .consume(returnCodeMove ->
+                                                {
+                                                    System.out.println("Successfully moved file. " + moveCommand);
+                                                },
+                                                error ->
+                                                        System.err.printf("ERROR: Failed to move file. %s. %s%n", error, moveCommand));
+                            }
+                            , error ->
+                                    System.err.printf("ERROR: Failed to make directory file. %s. %s%n", error, makeDirectoryCommand));
+                    }
+ //                System.out.println("INFO: Dir  " + dir);
                 return super.postVisitDirectory(dir, exc);
             }
         });

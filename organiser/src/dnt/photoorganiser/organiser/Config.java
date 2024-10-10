@@ -33,4 +33,12 @@ public class Config
     {
         return !execute;
     }
+
+    @Parameter(names = "--extensions")
+    public List<String> extensions = List.of();
+
+    public boolean organiseAllFiles()
+    {
+        return extensions.isEmpty();
+    }
 }
