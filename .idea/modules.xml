@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/commands/commands.iml" filepath="$PROJECT_DIR$/commands/commands.iml" />
+      <module fileurl="file://$PROJECT_DIR$/file-time/file-time.iml" filepath="$PROJECT_DIR$/file-time/file-time.iml" />
       <module fileurl="file://$PROJECT_DIR$/find-duplicates/find-duplicates.iml" filepath="$PROJECT_DIR$/find-duplicates/find-duplicates.iml" />
+      <module fileurl="file://$PROJECT_DIR$/image-compressor/image-compressor.iml" filepath="$PROJECT_DIR$/image-compressor/image-compressor.iml" />
       <module fileurl="file://$PROJECT_DIR$/organiser/organiser.iml" filepath="$PROJECT_DIR$/organiser/organiser.iml" />
       <module fileurl="file://$PROJECT_DIR$/photo-organiser.iml" filepath="$PROJECT_DIR$/photo-organiser.iml" />
       <module fileurl="file://$PROJECT_DIR$/testing/testing.iml" filepath="$PROJECT_DIR$/testing/testing.iml" />

@@ -6,14 +6,11 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="21 (2)" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="jcommander" level="project" />
+    <orderEntry type="module" module-name="file-time" />
     <orderEntry type="library" scope="TEST" name="junit" level="project" />
     <orderEntry type="library" scope="TEST" name="assertj.core" level="project" />
-    <orderEntry type="module" module-name="file-time" />
-    <orderEntry type="module" module-name="commands" />
-    <orderEntry type="library" name="dnt.common" level="project" />
-    <orderEntry type="module" module-name="testing" scope="TEST" />
-    <orderEntry type="library" name="jcommander" level="project" />
   </component>
 </module>

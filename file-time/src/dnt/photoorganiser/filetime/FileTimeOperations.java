@@ -1,10 +1,11 @@
-package dnt.photoorganiser.organiser;
+package dnt.photoorganiser.filetime;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -55,5 +56,12 @@ public class FileTimeOperations
         BasicFileAttributeView attributes = Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class);
         FileTime fileTime = attributes.readAttributes().lastModifiedTime();
         return new Date(fileTime.toInstant().toEpochMilli());
+    }
+
+    public static Date toDate(LocalDateTime ldt)
+    {
+        Date input = new Date();
+        Instant instant = input.toInstant();
+        return Date.from(instant);
     }
 }

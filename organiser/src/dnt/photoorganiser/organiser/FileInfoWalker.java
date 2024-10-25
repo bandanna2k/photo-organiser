@@ -13,9 +13,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import static dnt.photoorganiser.organiser.FileTimeOperations.*;
+import static dnt.photoorganiser.filetime.FileTimeOperations.*;
 
 public class FileInfoWalker
 {
