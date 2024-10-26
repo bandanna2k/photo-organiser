@@ -15,53 +15,41 @@ public class FileTimeOperations
 {
     public static final ZoneOffset ZONE_OFFSET = OffsetDateTime.now().getOffset();
 
-    public static LocalDateTime getCreationTime(File file) throws IOException
+    public static void setFileTimes(File file,
+                                    FileTime lastModifiedTime,
+                                    FileTime lastAccessedTime,
+                                    FileTime creationTime) throws IOException
     {
         BasicFileAttributeView attributes = Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class);
-        FileTime fileTime = attributes.readAttributes().creationTime();
-        return fileTime.toInstant().atZone(ZONE_OFFSET).toLocalDateTime();
+        attributes.setTimes(lastModifiedTime, lastAccessedTime, creationTime);
     }
 
-    public static Date getCreationTimeAsDate(File file) throws IOException
+    public static FileTime getCreationTime(File file) throws IOException
     {
         BasicFileAttributeView attributes = Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class);
-        FileTime fileTime = attributes.readAttributes().creationTime();
-        return new Date(fileTime.toInstant().toEpochMilli());
+        return attributes.readAttributes().creationTime();
     }
 
-    public static LocalDateTime getLastAccessedTime(File file) throws IOException
+    public static FileTime getLastAccessedTime(File file) throws IOException
     {
         BasicFileAttributeView attributes = Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class);
-        FileTime fileTime = attributes.readAttributes().lastAccessTime();
-        return fileTime.toInstant().atZone(ZONE_OFFSET).toLocalDateTime();
+        return attributes.readAttributes().lastAccessTime();
     }
 
-    public static Date getLastAccessedTimeAsDate(File file) throws IOException
+    public static FileTime getModifiedTime(File file) throws IOException
     {
         BasicFileAttributeView attributes = Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class);
-        FileTime fileTime = attributes.readAttributes().lastAccessTime();
-        return new Date(fileTime.toInstant().toEpochMilli());
-    }
-
-    public static LocalDateTime getModifiedTime(File file) throws IOException
-    {
-        BasicFileAttributeView attributes = Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class);
-        FileTime fileTime = attributes.readAttributes().lastModifiedTime();
-        return fileTime.toInstant().atZone(ZONE_OFFSET).toLocalDateTime();
-    }
-
-
-    public static Date getModifiedTimeAsDate(File file) throws IOException
-    {
-        BasicFileAttributeView attributes = Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class);
-        FileTime fileTime = attributes.readAttributes().lastModifiedTime();
-        return new Date(fileTime.toInstant().toEpochMilli());
+        return attributes.readAttributes().lastModifiedTime();
     }
 
     public static Date toDate(LocalDateTime ldt)
     {
-        Date input = new Date();
-        Instant instant = input.toInstant();
+        Instant instant = ldt.toInstant(ZoneOffset.UTC);
         return Date.from(instant);
+    }
+
+    public static LocalDateTime toLocalDateTime(FileTime fileTime)
+    {
+        return fileTime.toInstant().atZone(ZONE_OFFSET).toLocalDateTime();
     }
 }

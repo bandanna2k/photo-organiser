@@ -8,10 +8,16 @@ import java.util.List;
 public class Config
 {
     @Parameter(names = "--extensions")
-    public List<String> extensions = List.of("jpg", "jpeg", "png");
+    public List<String> extensions = List.of("jpg", "JPG", "jpeg", "JPEG", "png", "PNG");
 
     @Parameter(names = "--postfix")
     public String postfix = "min";
+
+    @Parameter(names = "--quality")
+    public float quality = 0.75f;
+
+    @Parameter(names = {"-e", "--execute"})
+    public boolean execute = false;
 
     @Override
     public String toString()
@@ -19,7 +25,21 @@ public class Config
         return "Config{" +
                 "extensions=" + extensions +
                 ", postfix='" + postfix + '\'' +
+                ", quality=" + quality +
+                ", execute=" + execute +
                 '}';
+    }
+
+    public Config execute(boolean value)
+    {
+        this.execute = value;
+        return this;
+    }
+
+    public Config quality(float value)
+    {
+        this.quality = value;
+        return this;
     }
 
     //

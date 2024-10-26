@@ -93,9 +93,9 @@ public class FileInfoWalker
     private Date getDateTime(File file) throws IOException
     {
         return switch (config.fileDateTimeMode) {
-            case Creation -> getCreationTimeAsDate(file);
-            case Modified -> getModifiedTimeAsDate(file);
-            case LastAccessed -> getLastAccessedTimeAsDate(file);
+            case Creation -> toDate(toLocalDateTime(getCreationTime(file)));
+            case Modified -> toDate(toLocalDateTime(getModifiedTime(file)));
+            case LastAccessed -> toDate(toLocalDateTime(getLastAccessedTime(file)));
         };
     }
 }

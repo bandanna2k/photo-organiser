@@ -1,22 +1,31 @@
 package dnt.photoorganiser.imagecompressor;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
 import dnt.photoorganiser.filetime.FileTimeOperations;
+import dnt.photoorganiser.imagecompressor.optimisation.JPEGOptimizerOptimisation;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
-import static dnt.photoorganiser.filetime.FileTimeOperations.toDate;
+import static dnt.photoorganiser.filetime.FileTimeOperations.*;
 
 public class Main
 {
+
+    private final Config config;
+
     public static void main(String[] args) throws IOException
     {
         new Main(args).start();
     }
+
     static Config getConfig(String[] args)
     {
         Config config = new Config();
@@ -31,23 +40,60 @@ public class Main
 
     public Main(Config config)
     {
+        this.config = config;
+    }
+
+    private static final SimpleDateFormat SDF = new SimpleDateFormat("dd-MM-yyyy");
+
+    private static String format(FileTime time)
+    {
+        try
+        {
+            return SDF.format(toDate(toLocalDateTime(time)));
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    void start()
+    {
         System.out.println(config);
         String workingDirectory = System.getProperty("user.dir");
-        System.out.println("INFO:" + workingDirectory);
 
-        File dir = new File(workingDirectory);
-        for (File file : dir.listFiles())
+        for (File file : Arrays.stream(new File(workingDirectory).listFiles()).sorted(Comparator.comparing(File::getName)).toList())
         {
             for (String ext : config.extensions)
             {
-                if(file.getName().endsWith("." + ext))
+                if (file.getName().endsWith("." + ext))
                 {
                     try
                     {
-                        LocalDateTime creationTime = FileTimeOperations.getCreationTime(file);
-                        LocalDateTime modifiedTime = FileTimeOperations.getModifiedTime(file);
-                        LocalDateTime lastAccessedTime = FileTimeOperations.getLastAccessedTime(file);
-                        System.out.printf("INFO:%s %s %s %s%n", file.getName(), format(creationTime), modifiedTime, lastAccessedTime);
+                        long originalSize = file.length();
+                        FileTime creationTime = getCreationTime(file);
+                        FileTime modifiedTime = getModifiedTime(file);
+                        FileTime lastAccessedTime = getLastAccessedTime(file);
+
+                        if(!config.execute)
+                        {
+                            System.out.printf("INFO: %s %s %s %s%n", format(creationTime), format(modifiedTime), format(lastAccessedTime), file.getName());
+                            continue;
+                        }
+
+                        File filenameWithPostfix = appendPostfix(file);
+
+                        Instant start = Instant.now();
+                        new JPEGOptimizerOptimisation(file, filenameWithPostfix, config.quality).optimise();
+                        Duration duration = Duration.between(start, Instant.now());
+                        long newSize = filenameWithPostfix.length();
+                        double conversionRatio = (double)newSize / (double) originalSize;
+
+                        FileTimeOperations.setFileTimes(filenameWithPostfix, modifiedTime, lastAccessedTime, creationTime);
+
+                        //System.out.printf("INFO:%s %s %s %s%n", format(creationTime), format(modifiedTime), format(lastAccessedTime), file.getName());
+                        System.out.printf("INFO: %s    %.2f    %,d->%,d    %.2f%n",
+                                filenameWithPostfix, conversionRatio, originalSize, newSize, (double)duration.toMillis() / 1000.0);
                     }
                     catch (IOException e)
                     {
@@ -58,20 +104,14 @@ public class Main
         }
     }
 
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("dd-MM-yyyy");
-    private static String format(LocalDateTime time)
+    private File appendPostfix(File file)
     {
-        try
-        {
-            return SDF.format(toDate(time.toLocalDate().atStartOfDay()));
-        }
-        catch (Exception ex)
-        {
-            throw ex;
-        }
-    }
+        String absolutePath = file.getAbsolutePath();
+        int lastPerido = absolutePath.lastIndexOf(".");
+        if(lastPerido < 0) return file;
 
-    void start()
-    {
+        String start = absolutePath.substring(0, lastPerido);
+        String end = absolutePath.substring(lastPerido);
+        return new File(start + "-" + config.postfix + end);
     }
 }

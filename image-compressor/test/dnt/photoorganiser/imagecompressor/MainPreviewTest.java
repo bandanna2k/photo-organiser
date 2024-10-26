@@ -1,21 +1,17 @@
 package dnt.photoorganiser.imagecompressor;
 
 import dnt.photoorganiser.commands.ArchiveCommands;
-import dnt.photoorganiser.commands.CopyCommand;
-import dnt.photoorganiser.commands.MoveCommand;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class MainTest
+public class MainPreviewTest
 {
     private Main main;
 
@@ -27,7 +23,7 @@ public class MainTest
     {
         System.setProperty("user.dir", temporaryFolder.getRoot().toString());
 
-        Config config = new Config().quality(0.8f).execute(true);
+        Config config = new Config().quality(0.8f);
         main = new Main(config);
     }
 
