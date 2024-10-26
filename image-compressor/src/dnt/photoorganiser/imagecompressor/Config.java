@@ -2,16 +2,22 @@ package dnt.photoorganiser.imagecompressor;
 
 import com.beust.jcommander.Parameter;
 
-import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 public class Config
 {
+    @Parameter()
+    public String contains;
+
     @Parameter(names = "--extensions")
     public List<String> extensions = List.of("jpg", "JPG", "jpeg", "JPEG", "png", "PNG");
 
     @Parameter(names = "--postfix")
     public String postfix = "min";
+
+    @Parameter(names = {"-r", "--regex"})
+    public String regex;
 
     @Parameter(names = "--quality")
     public float quality = 0.75f;
@@ -19,12 +25,17 @@ public class Config
     @Parameter(names = {"-e", "--execute"})
     public boolean execute = false;
 
+    public Optional<String> regex() { return Optional.ofNullable(regex); }
+    public Optional<String> contains() { return Optional.ofNullable(contains); }
+
     @Override
     public String toString()
     {
         return "Config{" +
-                "extensions=" + extensions +
+                "contains='" + contains + '\'' +
+                ", extensions=" + extensions +
                 ", postfix='" + postfix + '\'' +
+                ", regex='" + regex + '\'' +
                 ", quality=" + quality +
                 ", execute=" + execute +
                 '}';
@@ -33,6 +44,24 @@ public class Config
     public Config execute(boolean value)
     {
         this.execute = value;
+        return this;
+    }
+
+    public Config contains(String contains)
+    {
+        this.contains = contains;
+        return this;
+    }
+
+    public Config regex(String regex)
+    {
+        this.regex = regex;
+        return this;
+    }
+
+    public Config extensions(List<String> extensions)
+    {
+        this.extensions = extensions;
         return this;
     }
 

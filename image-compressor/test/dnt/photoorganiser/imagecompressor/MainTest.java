@@ -27,8 +27,10 @@ public class MainTest
     {
         System.setProperty("user.dir", temporaryFolder.getRoot().toString());
 
-        Config config = new Config().quality(0.8f).execute(true);
-        main = new Main(config);
+        main = new Main(new String[] {
+                "--quality", "0.8",
+                "--execute"
+        });
     }
 
     @Test
