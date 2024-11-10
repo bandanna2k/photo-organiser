@@ -46,20 +46,6 @@ public class FileTestBase
         return file;
     }
 
-    public static void setFileTimes(File file, LocalDateTime creationTime, LocalDateTime modifiedTime, LocalDateTime accessedTime)
-    {
-        try
-        {
-            Files.setAttribute(file.toPath(), "creationTime", toFileTime(creationTime));
-            Files.setAttribute(file.toPath(), "lastModifiedTime", toFileTime(modifiedTime));
-            Files.setAttribute(file.toPath(), "lastAccessTime", toFileTime(accessedTime));
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static FileTime toFileTime(LocalDateTime dateTime)
     {
         Instant instant = dateTime.toInstant(ZONE_OFFSET);

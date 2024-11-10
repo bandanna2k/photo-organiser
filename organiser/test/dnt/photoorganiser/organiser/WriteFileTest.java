@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
+import static dnt.photoorganiser.filetime.FileTimeOperations.setFileTimes;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static org.assertj.core.api.Assertions.*;
 
@@ -43,7 +44,7 @@ public class WriteFileTest extends FileTestBase
         LocalDateTime timeInThePast = LocalDateTime.of(2000, 1, 31, 23, 58, 59);
 
         File tempFile = tempDir.newFile();
-        setFileTimes(tempFile, timeInThePast, timeInThePast, timeInThePast);
+        setFileTimes(tempFile, toFileTime(timeInThePast), toFileTime(timeInThePast), toFileTime(timeInThePast));
 
         FileAssert.assertFile(tempFile)
                 .withCreated(timeInThePast)
