@@ -8,19 +8,23 @@ import dnt.photoorganiser.imagecompressor.optimisation.JPEGOptimizerOptimisation
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static dnt.photoorganiser.filetime.FileTimeOperations.*;
 
 public class Main
 {
-
     private final Config config;
 
     public static void main(String[] args) throws IOException
@@ -49,75 +53,93 @@ public class Main
 
     private static String format(FileTime time)
     {
-        try
-        {
-            return SDF.format(toDate(toLocalDateTime(time)));
-        }
-        catch (Exception ex)
-        {
-            throw ex;
-        }
+        return SDF.format(toDate(toLocalDateTime(time)));
     }
 
     int start()
     {
-        System.out.println(config);
-        String workingDirectory = System.getProperty("user.dir");
-
-        int fileToExecute = 0;
-        List<File> files = Arrays.stream(new File(workingDirectory).listFiles()).sorted(Comparator.comparing(File::getName)).toList();
-        for (File file : files)
+        try
         {
-            File filenameWithPostfix = appendPostfix(file);
-            try
+            System.out.println(config);
+            Path workingDirectory = Path.of(System.getProperty("user.dir"));
+
+            AtomicInteger fileToExecute = new AtomicInteger(0);
+            List<Path> files = new ArrayList<>();
+
+            Files.walk(workingDirectory).forEach(path ->
             {
-                long originalSize = file.length();
-                FileTime creationTime = getCreationTime(file);
-                FileTime modifiedTime = getModifiedTime(file);
-                FileTime lastAccessedTime = getLastAccessedTime(file);
-
-                boolean shouldContinue = shouldContinue(file);
-                fileToExecute += shouldContinue ? 1 : 0;
-
-                if(!shouldContinue || !config.execute)
+                if (shouldContinue(path.toFile()))
                 {
-                    System.out.printf("INFO: %s %s %s %s%n", format(creationTime), format(modifiedTime), format(lastAccessedTime), file.getName());
+                    fileToExecute.getAndIncrement();
+                    files.add(path);
+                }
+            });
+
+            for (Path path : files)
+            {
+                File file = path.toFile();
+                File filenameWithPostfix = appendPostfix(file);
+                if (filenameWithPostfix.exists() )
+                {
+                    System.out.printf("WARN: Skipping, file already exists. %s%n", file.getAbsolutePath());
+                    continue;
+                }
+                if(filenameWithPostfix.getName().contains("-" + config.postfix + "-" + config.postfix))
+                {
+                    System.out.printf("WARN: Skipping, file already compressed. %s%n", file.getAbsolutePath());
                     continue;
                 }
 
-                Instant start = Instant.now();
-                new JPEGOptimizerOptimisation(file, filenameWithPostfix, config.quality).optimise();
-                Duration duration = Duration.between(start, Instant.now());
-                long newSize = filenameWithPostfix.length();
-                double conversionRatio = (double)newSize / (double) originalSize;
+                try
+                {
+                    long originalSize = file.length();
+                    FileTime creationTime = getCreationTime(file);
+                    FileTime modifiedTime = getModifiedTime(file);
+                    FileTime lastAccessedTime = getLastAccessedTime(file);
 
-                FileTimeOperations.setFileTimes(filenameWithPostfix, modifiedTime, lastAccessedTime, creationTime);
+                    if (config.execute)
+                    {
+                        Instant start = Instant.now();
+                        new JPEGOptimizerOptimisation(file, filenameWithPostfix, config.quality).optimise();
+                        Duration duration = Duration.between(start, Instant.now());
+                        long newSize = filenameWithPostfix.length();
+                        double conversionRatio = (double) newSize / (double) originalSize;
 
-                //System.out.printf("INFO:%s %s %s %s%n", format(creationTime), format(modifiedTime), format(lastAccessedTime), file.getName());
-                System.out.printf("INFO: %.2f    %s    %,d->%,d    %.2f%n",
-                        conversionRatio, filenameWithPostfix, originalSize, newSize, (double)duration.toMillis() / 1000.0);
+                        setFileTimes(filenameWithPostfix, modifiedTime, lastAccessedTime, creationTime);
+                        System.out.printf("INFO: %.2f    %s    %,d->%,d    %.2f%n",
+                                conversionRatio, filenameWithPostfix, originalSize, newSize, (double) duration.toMillis() / 1000.0);
+                    }
+                    else
+                    {
+                        System.out.printf("INFO: %s %s %s %s%n", format(creationTime), format(modifiedTime), format(lastAccessedTime), file.getAbsolutePath());
+                    }
+                }
+                catch (IOException e)
+                {
+                    Result<Integer, String> result = new DeleteCommand(filenameWithPostfix.toPath()).execute();
+                    result.consumeIfFailure(v -> System.out.printf("ERROR: Failed to delete file. %s %s%n", filenameWithPostfix.getName(), v));
+                    throw new RuntimeException(e);
+                }
+                catch (Exception e)
+                {
+                    System.out.printf("ERROR: %s %s%n", file.getName(), e.getMessage());
+                    Result<Integer, String> result = new DeleteCommand(filenameWithPostfix.toPath()).execute();
+                    result.consumeIfFailure(v -> System.out.printf("ERROR: Failed to delete file. %s %s%n", filenameWithPostfix.getName(), v));
+                }
             }
-            catch (IOException e)
-            {
-                Result<Integer, String> result = new DeleteCommand(filenameWithPostfix.toPath()).execute();
-                result.consumeIfFailure(v -> System.out.printf("ERROR: Failed to delete file. %s %s%n", filenameWithPostfix.getName(), v));
-                throw new RuntimeException(e);
-            }
-            catch (Exception e)
-            {
-                System.out.printf("ERROR: %s %s%n", file.getName(), e.getMessage());
-                Result<Integer, String> result = new DeleteCommand(filenameWithPostfix.toPath()).execute();
-                result.consumeIfFailure(v -> System.out.printf("ERROR: Failed to delete file. %s %s%n", filenameWithPostfix.getName(), v));
-            }
+            return fileToExecute.get();
         }
-        return fileToExecute;
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     private boolean shouldContinue(File file)
     {
         boolean doContinue = true;
 
-        if(!config.extensions.isEmpty())
+        if (!config.extensions.isEmpty())
         {
             boolean extensionMatches = false;
             for (String ext : config.extensions)
@@ -129,14 +151,14 @@ public class Main
             }
             doContinue &= extensionMatches;
         }
-        if(config.contains().isPresent() && !file.getName().contains(config.contains().get()))
+        if (config.contains().isPresent() && !file.getName().contains(config.contains().get()))
         {
             doContinue = false;
         }
-        if(config.regex().isPresent())
+        if (config.regex().isPresent())
         {
             String regex = config.regex().get();
-            if(!file.getName().matches(regex))
+            if (!file.getName().matches(regex))
             {
                 doContinue = false;
             }
@@ -148,7 +170,10 @@ public class Main
     {
         String absolutePath = file.getAbsolutePath();
         int lastPerido = absolutePath.lastIndexOf(".");
-        if(lastPerido < 0) return file;
+        if (lastPerido < 0)
+        {
+            return file;
+        }
 
         String start = absolutePath.substring(0, lastPerido);
         String end = absolutePath.substring(lastPerido);

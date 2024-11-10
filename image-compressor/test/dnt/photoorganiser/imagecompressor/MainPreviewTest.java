@@ -19,7 +19,7 @@ public class MainPreviewTest
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Before
-    public void setUp() throws IOException
+    public void setUp()
     {
         System.setProperty("user.dir", temporaryFolder.getRoot().toString());
 
